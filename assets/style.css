@@ -1,0 +1,242 @@
+/* ===== MAF vs ADK Comparison Demo Styles ===== */
+
+/* --- Global --- */
+[data-testid="stAppViewContainer"] {
+    background-color: #0e1117;
+}
+
+/* --- Side-by-side columns --- */
+.maf-col {
+    border-left: 4px solid #4A90D9;
+    background: linear-gradient(135deg, #1a2332 0%, #0e1117 100%);
+    padding: 1.2rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.adk-col {
+    border-left: 4px solid #34A853;
+    background: linear-gradient(135deg, #1a2e1a 0%, #0e1117 100%);
+    padding: 1.2rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+/* --- Advantage banner --- */
+.advantage-banner {
+    background: linear-gradient(90deg, #1a2332 0%, #2a3a52 100%);
+    border: 1px solid #4A90D9;
+    border-left: 5px solid #4A90D9;
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.advantage-banner h4 {
+    color: #4A90D9;
+    margin-top: 0;
+}
+
+.advantage-banner ul {
+    color: #c0c8d4;
+}
+
+/* --- Section header --- */
+.section-header {
+    background: linear-gradient(90deg, #4A90D9 0%, #34A853 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+/* --- Framework labels --- */
+.framework-label-maf {
+    background-color: #4A90D9;
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: inline-block;
+    margin-bottom: 0.8rem;
+}
+
+.framework-label-adk {
+    background-color: #34A853;
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: inline-block;
+    margin-bottom: 0.8rem;
+}
+
+/* --- Comparison matrix table --- */
+.comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.comparison-table th {
+    background-color: #1a2332;
+    color: #4A90D9;
+    padding: 0.7rem 1rem;
+    text-align: left;
+    border-bottom: 2px solid #4A90D9;
+}
+
+.comparison-table td {
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid #2a3a52;
+    color: #c0c8d4;
+}
+
+/* --- Code blocks --- */
+.stCodeBlock {
+    border-radius: 8px !important;
+}
+
+/* --- Live demo chat --- */
+.chat-message-user {
+    background-color: #1a2332;
+    border-left: 3px solid #4A90D9;
+    padding: 0.8rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+}
+
+.chat-message-assistant {
+    background-color: #0e1117;
+    border-left: 3px solid #34A853;
+    padding: 0.8rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+}
+
+/* --- Metric cards --- */
+.metric-card {
+    background: #1a2332;
+    border: 1px solid #2a3a52;
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+}
+
+.metric-card h3 {
+    color: #4A90D9;
+    margin: 0;
+}
+
+.metric-card p {
+    color: #8899aa;
+    margin: 0.3rem 0 0 0;
+    font-size: 0.85rem;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* --- Tablets (≤1024px) --- */
+@media (max-width: 1024px) {
+    .section-header {
+        font-size: 1.5rem;
+    }
+
+    .maf-col, .adk-col {
+        padding: 0.8rem;
+    }
+
+    .advantage-banner {
+        padding: 0.8rem 1rem;
+    }
+}
+
+/* --- Mobile (≤768px) --- */
+@media (max-width: 768px) {
+    .section-header {
+        font-size: 1.3rem;
+    }
+
+    .maf-col, .adk-col {
+        padding: 0.6rem;
+        margin-bottom: 0.6rem;
+        border-left-width: 3px;
+    }
+
+    .framework-label-maf,
+    .framework-label-adk {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.5rem;
+    }
+
+    .advantage-banner {
+        padding: 0.6rem 0.8rem;
+        margin: 1rem 0;
+    }
+
+    .advantage-banner h4 {
+        font-size: 0.95rem;
+    }
+
+    .advantage-banner ul {
+        padding-left: 1.2rem;
+        font-size: 0.85rem;
+    }
+
+    .metric-card {
+        padding: 0.6rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .metric-card h3 {
+        font-size: 1rem;
+    }
+
+    .metric-card p {
+        font-size: 0.75rem;
+    }
+
+    /* Stack side-by-side columns vertically on mobile */
+    [data-testid="stHorizontalBlock"] {
+        flex-direction: column !important;
+    }
+
+    [data-testid="stHorizontalBlock"] > [data-testid="stVerticalBlockBorderWrapper"] {
+        width: 100% !important;
+    }
+
+    /* Smaller code blocks on mobile */
+    .stCodeBlock pre {
+        font-size: 0.7rem !important;
+        padding: 0.5rem !important;
+    }
+
+    /* Compact dataframe */
+    .stDataFrame {
+        font-size: 0.75rem;
+    }
+}
+
+/* --- Small mobile (≤480px) --- */
+@media (max-width: 480px) {
+    .section-header {
+        font-size: 1.1rem;
+    }
+
+    .stCodeBlock pre {
+        font-size: 0.65rem !important;
+    }
+
+    .advantage-banner ul li {
+        margin-bottom: 0.3rem;
+    }
+}
+}
+
+.metric-card p {
+    color: #8899aa;
+    margin: 0.3rem 0 0 0;
+    font-size: 0.85rem;
+}
