@@ -31,6 +31,8 @@ with st.sidebar:
     4. 🔀 Multi-Agent Orchestration
     5. 🚀 Deployment & Production
     6. 🔗 3rd Party Integration
+    7. 🔄 Cross-Model Usage
+    8. ☁️ Foundry vs Vertex AI
     """)
     st.markdown("---")
     st.markdown("**Baseline**: MAF v2 Responses API")
@@ -200,6 +202,8 @@ sections = [
     ("🔀", "Multi-Agent", "Orchestration patterns, graph workflows, human-in-the-loop"),
     ("🚀", "Deployment", "Containerisation, hosting, eval, prompt optimization"),
     ("🔗", "3rd Party", "Snowflake, BlueYonder, Fabric FabricIQ & WorkIQ"),
+    ("🔄", "Cross-Model", "MAF with Gemini, ADK with Azure OpenAI/Foundry"),
+    ("☁️", "Foundry vs Vertex", "Microsoft Foundry vs Google Vertex AI platform comparison"),
 ]
 
 for i, (icon, title, desc) in enumerate(sections):
