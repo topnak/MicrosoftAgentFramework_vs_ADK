@@ -32,14 +32,15 @@ render_comparison(
     section_title="1.1 — Basic Agent Definition",
     maf_title="SDK + Declarative Config",
     maf_description=(
-        "Create agents via the **AIProjectClient SDK** connected to Azure AI Foundry. "
-        "The agent is a managed resource with a unique ID, linked to a model deployment."
+        "Create agents via the **AzureOpenAIResponsesClient** from the `agent-framework` package. "
+        "Use `.as_agent()` to wrap a model client into a full agent with instructions and tools."
     ),
     maf_code=maf.AGENT_CREATION_BASIC,
-    adk_title="Python Code Only",
+    adk_title="Python Code (LlmAgent)",
     adk_description=(
-        "Define agents as Python objects with `Agent()` constructor. "
-        "Uses Google's Gemini models by default, or LiteLLM for other providers."
+        "Define agents as Python `LlmAgent` objects (aliased as `Agent`). "
+        "Uses Google's Gemini models by default, or LiteLLM/Ollama/Claude for other providers. "
+        "ADK also supports TypeScript, Go, and Java SDKs."
     ),
     adk_code=adk.AGENT_CREATION_BASIC,
 )
@@ -84,27 +85,29 @@ with st.expander("🔍 Deep Dive: Agent Definition — Feature Comparison", expa
             """
             <div class="adk-col">
             <h4 style="color:#34A853;">ADK: In-Process Object Model</h4>
-            <p><strong>How it works:</strong> <code>Agent()</code> creates a Python object in your process.
-            No server-side registration. The agent exists only while your code runs.</p>
+            <p><strong>How it works:</strong> <code>LlmAgent()</code> (aliased as <code>Agent</code>) creates a Python object in your process.
+            The agent uses a Runner with a SessionService for execution.</p>
 
             <p><strong>Benefits:</strong></p>
             <ul>
-            <li><strong>Simplicity</strong> — No cloud setup needed. Agent runs in 10 lines of code.</li>
+            <li><strong>Simplicity</strong> — No cloud setup needed. Agent runs in minutes.</li>
             <li><strong>Fast iteration</strong> — Change instructions, restart, test immediately.</li>
-            <li><strong>LiteLLM routing</strong> — Use any model provider via LiteLLM prefix
-            (e.g., <code>"litellm/gpt-4o"</code>).</li>
+            <li><strong>Multi-language</strong> — SDKs for Python, TypeScript, Go, and Java.</li>
+            <li><strong>Model-agnostic</strong> — Gemini, Claude, Ollama, vLLM, LiteLLM, and more.</li>
+            <li><strong>Rich callbacks</strong> — before_model, after_model, before_tool, after_tool hooks.</li>
+            <li><strong>Built-in Dev UI</strong> — <code>adk web</code> for visual debugging.</li>
             </ul>
 
             <p><strong>Limitations:</strong></p>
             <ul>
             <li>No server-side agent management or versioning</li>
-            <li>Python only — no .NET</li>
-            <li>API keys required (no managed identity)</li>
+            <li>No .NET support (but has TypeScript, Go, Java)</li>
+            <li>GCP IAM for auth (no Azure Managed Identity)</li>
             <li>No built-in model failover or region routing</li>
             </ul>
 
-            <p><strong>When to use:</strong> Prototypes, research, or GCP-native environments where
-            simplicity and speed of iteration are the priority.</p>
+            <p><strong>When to use:</strong> Multi-language teams, GCP-native environments, rapid prototyping,
+            or when you need deep lifecycle control via callbacks.</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -122,12 +125,12 @@ render_comparison(
     ),
     maf_code=maf.AGENT_YAML,
     maf_lang="yaml",
-    adk_title="No Declarative Format",
+    adk_title="Agent Config (Newer Feature)",
     adk_description=(
-        "ADK has **no equivalent** to `agent.yaml`. Agent configuration lives entirely in Python code. "
-        "No standardized metadata format for CI/CD or agent management."
+        "ADK has an **Agent Config** format for declarative agent definition. "
+        "Less mature than MAF's `agent.yaml` — no versioning, secret references, or CI/CD patterns."
     ),
-    adk_code=adk.AGENT_NO_YAML,
+    adk_code=adk.AGENT_CONFIG,
 )
 
 # ── Feature deep-dive: agent.yaml ───────────────────────────────────
@@ -284,15 +287,15 @@ features = {
         "~30 min (with Foundry setup)",
     ],
     "ADK": [
-        "❌ In-process Python object",
-        "❌ None",
-        "❌ Python only",
-        "❌ Proprietary runner",
+        "⚠️ In-process Python object",
+        "⚠️ Agent Config (basic)",
+        "✅ Python, TypeScript, Go, Java",
+        "⚠️ Proprietary runner",
         "⚠️ Custom event iteration",
         "❌ Manual",
-        "❌ API keys required",
-        "❌ Git only",
-        "❌ Manual server setup",
+        "⚠️ GCP IAM (manual)",
+        "⚠️ Git + Agent Config",
+        "✅ adk api_server CLI",
         "~5 min (API key + code)",
     ],
     "Why It Matters": [
@@ -316,10 +319,10 @@ st.dataframe(df, use_container_width=True, hide_index=True, height=420)
 render_advantage(
     "Agent Creation",
     [
-        "<strong>Python & .NET</strong> — First-class support for both languages; ADK is Python-only",
-        "<strong>agent.yaml</strong> — Declarative, version-controlled agent metadata for CI/CD",
         "<strong>OpenAI Responses API v2</strong> — Industry-standard protocol; ADK uses proprietary runner",
+        "<strong>agent.yaml</strong> — Mature declarative config with versioning, secrets, CI/CD; ADK Agent Config is newer",
         "<strong>Managed resource</strong> — Agents are Foundry resources with IDs, versioning, and lifecycle management",
+        "<strong>Azure-native security</strong> — Managed Identity, RBAC, Key Vault; ADK uses GCP IAM",
         "<strong>Hosting adapter</strong> — One codebase works locally and in Foundry containers",
     ],
 )

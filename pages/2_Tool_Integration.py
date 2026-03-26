@@ -56,15 +56,15 @@ render_comparison(
         "Compose them freely with `ToolSet`."
     ),
     maf_code=maf.TOOLS_BUILTIN,
-    adk_title="Google Search Only",
+    adk_title="Google Search + Code Execution",
     adk_description=(
-        "ADK provides only **Google Search** as a built-in tool.\n\n"
-        "❌ No built-in RAG/vector search\n"
-        "❌ No built-in code interpreter\n"
-        "❌ No built-in file search\n\n"
-        "All enterprise tools must be **built manually**."
+        "ADK provides **Google Search Grounding** and **BuiltInCodeExecutor**.\n\n"
+        "Also supports **OpenAPI tools** for REST API integration and\n"
+        "**Vertex AI Search Grounding** for enterprise data.\n\n"
+        "⚠️ No built-in Azure AI Search equivalent\n"
+        "⚠️ No built-in Bing Grounding"
     ),
-    adk_code=adk.TOOLS_NO_BUILTIN,
+    adk_code=adk.TOOLS_CODE_EXEC,
 )
 
 # ── Section 3: Azure AI Search (RAG) ───────────────────────────────
@@ -77,13 +77,11 @@ render_comparison(
         "Agent automatically generates search queries and cites sources."
     ),
     maf_code=maf.TOOLS_AI_SEARCH,
-    adk_title="Manual RAG Implementation",
+    adk_title="Google Search + Vertex AI Search Grounding",
     adk_description=(
-        "ADK has **no built-in RAG tool**. You must:\n"
-        "1. Generate embeddings manually\n"
-        "2. Set up and query a vector database\n"
-        "3. Build retrieval logic\n"
-        "4. Handle citation formatting"
+        "ADK provides **Google Search Grounding** built-in.\n"
+        "For enterprise RAG, **Vertex AI Search Grounding** is available\n"
+        "but requires Vertex AI setup (not a standalone tool like Azure AI Search)."
     ),
     adk_code=adk.TOOLS_SEARCH,
 )
@@ -110,10 +108,103 @@ render_comparison(
 render_advantage(
     "Tool Integration",
     [
-        "<strong>4+ built-in enterprise tools</strong> — AI Search, Bing, Code Interpreter, Web Search; ADK has only Google Search",
-        "<strong>Azure AI Search RAG</strong> — One-line vector/semantic/hybrid search; ADK requires manual RAG pipeline",
+        "<strong>Azure AI Search RAG</strong> — One-line vector/semantic/hybrid search; ADK uses Vertex AI Search (more setup)",
+        "<strong>Bing Grounding</strong> — Enterprise web search with citations; ADK has Google Search Grounding",
         "<strong>Multi-tool ToolSet</strong> — Compose built-in + custom + MCP tools freely",
         "<strong>MCP with allowed_tools</strong> — Fine-grained remote tool access control",
-        "<strong>Code Interpreter sandbox</strong> — Secure Python execution for data analysis; ADK has none",
+        "<strong>Code Interpreter sandbox</strong> — Managed sandbox; ADK has BuiltInCodeExecutor via Gemini API",
     ],
 )
+
+st.markdown("---")
+
+# ── ADK Unique Features: Tools ─────────────────────────────────────
+st.markdown("### 🌟 Features Unique to Google ADK — Tools & Integrations")
+
+with st.expander("🔍 ADK-Only: OpenAPI Tools — Auto-generate tools from OpenAPI specs", expanded=False):
+    st.markdown(
+        """
+        ADK can **automatically generate tools from OpenAPI/Swagger specifications**.
+        Point it at any REST API spec and get callable tools instantly:
+
+        ```python
+        from google.adk.tools.openapi_tool import OpenAPIToolset
+
+        # Auto-generate tools from an OpenAPI spec URL
+        tools = OpenAPIToolset.from_url(
+            "https://api.example.com/openapi.json"
+        )
+
+        agent = LlmAgent(
+            name="api_agent",
+            model="gemini-2.5-flash",
+            tools=tools,
+        )
+        ```
+
+        **Why this matters:** Any REST API with an OpenAPI spec becomes instantly usable
+        as agent tools — no manual function wrapping needed.
+
+        **MAF equivalent:** You'd use `FunctionTool` to wrap individual API calls manually,
+        or use MCP for external service integration.
+        """
+    )
+
+with st.expander("🔍 ADK-Only: Agent Skills — Reusable, context-window-efficient capabilities", expanded=False):
+    st.markdown(
+        """
+        **Agent Skills** are pre-built or custom capabilities that work efficiently
+        inside AI context window limits. Available at [agentskills.io](https://agentskills.io/).
+
+        Skills differ from regular tools:
+        - **Context-efficient** — Designed to minimize token usage
+        - **Pre-packaged** — Ready-to-use capabilities for common tasks
+        - **Composable** — Mix and match skills across agents
+
+        ```python
+        from google.adk.agents import LlmAgent
+
+        agent = LlmAgent(
+            name="skilled_agent",
+            model="gemini-2.5-flash",
+            skills=["web_browsing", "code_analysis"],
+        )
+        ```
+
+        **MAF equivalent:** No direct equivalent — closest is using built-in tools
+        or composing with MCP servers.
+        """
+    )
+
+with st.expander("🔍 ADK-Only: Plugins — Pre-packaged third-party integrations", expanded=False):
+    st.markdown(
+        """
+        ADK **Plugins** allow integrating complex, pre-packaged behaviors and
+        third-party services directly into agent workflows:
+
+        - Pre-built plugin marketplace
+        - Third-party service integrations
+        - Complex behavior packages
+
+        **MAF equivalent:** Similar functionality via MCP servers and built-in tool
+        definitions, but no formalized plugin system.
+        """
+    )
+
+with st.expander("🔍 ADK-Only: Action Confirmations — Built-in tool execution approval", expanded=False):
+    st.markdown(
+        """
+        ADK has built-in support for **action confirmations** before tool execution.
+        This allows agents to ask for user approval before performing actions:
+
+        ```python
+        # Tools can require confirmation before execution
+        # https://google.github.io/adk-docs/tools-custom/confirmation/
+        ```
+
+        This provides a safety net for destructive or irreversible operations.
+
+        **MAF equivalent:** Human-in-the-loop checkpoints in graph workflows serve
+        a similar purpose but at the orchestration level rather than tool level.
+        """
+    )

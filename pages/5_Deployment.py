@@ -57,10 +57,13 @@ render_comparison(
     ),
     maf_code=maf.DEPLOY_FOUNDRY,
     maf_lang="bash",
-    adk_title="Google Cloud Run (Manual Config)",
+    adk_title="ADK CLI + Cloud Run/Vertex AI",
     adk_description=(
-        "ADK deploys to Cloud Run with standard `gcloud` commands. "
-        "Authentication, monitoring, and scaling require **separate manual configuration**."
+        "ADK provides built-in CLI tools and multiple deployment options:\n"
+        "- **Vertex AI Agent Engine** (managed hosting)\n"
+        "- **Cloud Run** (serverless containers)\n"
+        "- **GKE** (Kubernetes)\n"
+        "- **Agent Starter Pack** (templates)"
     ),
     adk_code=adk.DEPLOY_CLOUD_RUN,
     adk_lang="bash",
@@ -78,14 +81,14 @@ render_comparison(
         "- **A/B testing**: Compare agent versions with quality metrics"
     ),
     maf_code=maf.DEPLOY_EVAL,
-    adk_title="No Built-in Eval Framework",
+    adk_title="Built-in Eval Criteria + User Sim",
     adk_description=(
-        "ADK has **no built-in evaluation or prompt optimization**.\n\n"
-        "❌ No built-in evaluators\n"
-        "❌ No prompt optimization pipeline\n"
-        "❌ No dataset harvesting from traces\n"
-        "❌ No A/B testing framework\n\n"
-        "All quality assurance must be built manually."
+        "ADK has **built-in evaluation** with:\n\n"
+        "- **Eval criteria** for response quality and tool trajectories\n"
+        "- **User simulation** for multi-turn testing\n"
+        "- **CLI support**: `adk eval` and Dev UI evaluation tab\n\n"
+        "⚠️ No prompt optimization from production traces\n"
+        "⚠️ No dataset harvesting from live traffic"
     ),
     adk_code=adk.DEPLOY_NO_EVAL,
 )
@@ -122,13 +125,13 @@ prod_features = {
     "ADK + GCP": [
         "⚠️ Manual IAM setup",
         "⚠️ Manual IAM config",
-        "⚠️ Manual Cloud Monitoring",
-        "⚠️ Cloud Run config",
+        "⚠️ Cloud Logging/Monitoring",
+        "✅ Vertex AI / Cloud Run",
         "⚠️ VPC config",
+        "✅ Eval criteria + user sim",
         "❌ Build manually",
         "❌ Build manually",
-        "❌ Build manually",
-        "❌ No metadata format",
+        "⚠️ Agent Config (basic)",
         "⚠️ Cloud Run revisions",
     ],
 }
@@ -142,10 +145,10 @@ st.dataframe(df, use_container_width=True, hide_index=True, height=400)
 render_advantage(
     "Deployment & Production",
     [
-        "<strong>Hosting adapter</strong> — Standard container pattern with protocol translation; ADK has no equivalent",
+        "<strong>Hosting adapter</strong> — Standard container pattern with protocol translation; ADK uses CLI-based server",
         "<strong>Managed Identity + RBAC</strong> — Zero credential management; ADK requires manual IAM setup",
-        "<strong>Built-in evaluation</strong> — Intent, task, groundedness, tool accuracy evaluators; ADK has none",
         "<strong>Prompt optimization from traces</strong> — Automatically improve instructions from production data; unique to MAF",
-        "<strong>agent.yaml for CI/CD</strong> — Version-controlled agent metadata; ADK has no standardized format",
+        "<strong>agent.yaml for CI/CD</strong> — Mature declarative config; ADK Agent Config is newer and less featured",
+        "<strong>Production observability</strong> — Automatic App Insights tracing; ADK uses Cloud Monitoring (manual setup)",
     ],
 )

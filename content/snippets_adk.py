@@ -5,18 +5,21 @@
 # ─────────────────────────────────────────────
 
 AGENT_CREATION_BASIC = '''\
-from google.adk.agents import Agent
+from google.adk.agents import LlmAgent
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
+from google.genai import types
 
-agent = Agent(
+# LlmAgent (aliased as Agent) is the core component
+agent = LlmAgent(
     name="supply_chain_assistant",
-    model="gemini-2.0-flash",  # or via LiteLLM: "litellm/gpt-4o"
+    model="gemini-2.5-flash",
+    description="Handles supply chain queries.",
     instruction="""You are a supply chain assistant.
     Help users query inventory and track orders.""",
 )
 
-# Create runner and session
+# Create runner and session service
 session_service = InMemorySessionService()
 runner = Runner(
     agent=agent,
@@ -25,7 +28,6 @@ runner = Runner(
 )
 
 # Run the agent
-from google.adk.agents import types
 content = types.Content(
     role="user",
     parts=[types.Part(text="What is inventory for SKU-4521?")]
@@ -36,23 +38,32 @@ async for event in runner.run_async(
     session_id="session-1",
     new_message=content,
 ):
-    if event.content and event.content.parts:
+    if event.is_final_response() and event.content:
         print(event.content.parts[0].text)
 '''
 
-AGENT_NO_YAML = '''\
-# ADK: No declarative agent metadata file
-# Agent definition is purely in Python code
-# No equivalent to agent.yaml for version-controlled config
+AGENT_CONFIG = '''\
+# ADK: Agent Config — declarative agent definition
+# Supported via adk CLI and documented at:
+# https://google.github.io/adk-docs/agents/config/
 
-# To configure for deployment, you create a custom
-# entrypoint or use adk web/adk api_server CLI:
+# agent.json or agent config file
+{
+    "name": "supply_chain_assistant",
+    "model": "gemini-2.5-flash",
+    "instruction": "You are a supply chain assistant.",
+    "tools": ["query_inventory", "check_orders"],
+    "description": "Handles supply chain queries"
+}
+
+# Deploy with adk CLI:
 # $ adk api_server --agent supply_chain_app.agent
+# $ adk web  (launches built-in dev UI)
 
-# Deployment configuration is typically in:
-# - Dockerfile (manual)
-# - app.yaml (Cloud Run)
-# - No standardized agent metadata format
+# Note: Agent Config is less mature than MAF agent.yaml
+# — no version field, no secret references,
+# — no environment variable templating
+# — no CI/CD pipeline integration patterns
 '''
 
 AGENT_INVOKE = '''\
@@ -84,7 +95,7 @@ async for event in runner.run_async(
 # ─────────────────────────────────────────────
 
 TOOLS_FUNCTION = '''\
-from google.adk.tools import FunctionTool
+from google.adk.agents import LlmAgent
 
 def query_snowflake(query: str, warehouse: str = "COMPUTE_WH") -> dict:
     """Execute a query against Snowflake data warehouse."""
@@ -95,59 +106,64 @@ def check_order_status(order_id: str) -> dict:
     """Check order fulfillment status."""
     return {"status": "In Transit", "eta": "2 days"}
 
-# Tools are passed as list to Agent constructor
-agent = Agent(
+# ADK auto-wraps plain functions as FunctionTool
+agent = LlmAgent(
     name="multi_tool_agent",
-    model="gemini-2.0-flash",
+    model="gemini-2.5-flash",
     instruction="Use tools to answer supply chain questions.",
     tools=[query_snowflake, check_order_status],
 )
+# Docstrings and type hints are used for tool schemas
 '''
 
 TOOLS_SEARCH = '''\
+from google.adk.agents import LlmAgent
 from google.adk.tools import google_search
 
-# Built-in: Only Google Search available
-agent = Agent(
+# Built-in: Google Search Grounding
+agent = LlmAgent(
     name="search_agent",
-    model="gemini-2.0-flash",
+    model="gemini-2.5-flash",
     instruction="Search the web for information.",
     tools=[google_search],
 )
 
-# ❌ No built-in Azure AI Search equivalent
-# ❌ No built-in Code Interpreter
-# ❌ No built-in Bing Grounding
-# ❌ No built-in File Search with vector store
-# → Must build custom tools for each
+# Also available: Vertex AI Search Grounding
+# for enterprise search over custom data sources.
+# Configured via Vertex AI, not a standalone tool.
+
+# ⚠️ No built-in Azure AI Search equivalent
+# ⚠️ No built-in Bing Grounding
+# ⚠️ No built-in File Search with vector store
+# → Use OpenAPI tools or custom functions for RAG
 '''
 
-TOOLS_NO_BUILTIN = '''\
-# ADK: Enterprise tools must be built manually
+TOOLS_CODE_EXEC = '''\
+from google.adk.agents import LlmAgent
+from google.adk.code_executors import BuiltInCodeExecutor
 
-# No built-in RAG / vector search tool
-# You need to implement your own:
-from google.cloud import aiplatform
+# ADK: Built-in code execution via Gemini API
+code_agent = LlmAgent(
+    name="calculator_agent",
+    model="gemini-2.5-flash",
+    code_executor=BuiltInCodeExecutor(),
+    instruction="""You are a calculator agent.
+    Write and execute Python code to calculate results.""",
+    description="Executes Python code for calculations.",
+)
 
-def search_product_catalog(query: str) -> dict:
-    """Custom RAG — manually coded vector search."""
-    # 1. Generate embedding
-    # 2. Query vector DB (Vertex AI, Pinecone, etc.)
-    # 3. Return results
-    # All infrastructure managed by you
-    pass
+# The BuiltInCodeExecutor uses Gemini's native
+# code execution capability — runs in Google's sandbox
 
-# No built-in Code Interpreter
-# Must use custom sandbox execution
-def run_python_code(code: str) -> dict:
-    """Custom code execution — no sandbox provided."""
-    # Security risk: must build your own sandboxing
-    pass
+# Also supports OpenAPI tools for REST API integration:
+# from google.adk.tools.openapi_tool import OpenAPIToolset
+# tools = OpenAPIToolset.from_url("https://api.example.com/openapi.json")
 '''
 
 TOOLS_MCP = '''\
-# ADK: MCP support (added in later versions)
+# ADK: MCP tool support
 from google.adk.tools.mcp_tool import MCPToolset
+from google.adk.tools.mcp_tool import SseServerParams
 
 # Connect to MCP server
 tools, cleanup = await MCPToolset.from_server(
@@ -156,9 +172,9 @@ tools, cleanup = await MCPToolset.from_server(
     ),
 )
 
-agent = Agent(
+agent = LlmAgent(
     name="mcp_agent",
-    model="gemini-2.0-flash",
+    model="gemini-2.5-flash",
     instruction="Query Snowflake via MCP.",
     tools=tools,
 )
@@ -182,8 +198,11 @@ from google.adk.sessions import DatabaseSessionService
 
 session_service = DatabaseSessionService(
     db_url="sqlite:///sessions.db",
-    # or PostgreSQL, but manual setup required
+    # or PostgreSQL for production
 )
+
+# ADK also supports session rewind (time-travel)
+# and session migration between services
 
 runner = Runner(
     agent=agent,
@@ -193,27 +212,37 @@ runner = Runner(
 '''
 
 MEMORY_STATE = '''\
-# ADK: Manual state management via session state dict
-# No built-in long-term memory or summarization
+# ADK: State and Memory services
+# State = per-session key-value store
+# Memory = cross-session recall
 
-async for event in runner.run_async(
+# State is accessed via session
+session = await session_service.get_session(
+    app_name="supply_chain_app",
     user_id="user-1",
     session_id="session-1",
-    new_message=content,
-):
-    # Access session state manually
-    session = session_service.get_session(
-        app_name="supply_chain_app",
-        user_id="user-1",
-        session_id="session-1",
-    )
-    state = session.state  # Simple key-value dict
+)
+state = session.state  # Dict-like state object
 
-# ❌ No automatic conversation summarization
-# ❌ No user profile learning
-# ❌ No embedding-based memory retrieval
-# ❌ No per-user memory scoping (manual implementation)
-# → Must build all memory patterns from scratch
+# output_key saves agent response to state automatically
+agent = LlmAgent(
+    name="analyst",
+    model="gemini-2.5-flash",
+    output_key="analysis_result",  # Auto-saved to state
+    instruction="Analyze the data.",
+)
+
+# Memory service for cross-session recall
+from google.adk.sessions import InMemoryMemoryService
+
+memory_service = InMemoryMemoryService()
+
+# Context features:
+# ✅ Context caching (reduce token usage)
+# ✅ Context compression (auto-summarize long contexts)
+# ✅ Session rewind (go back to earlier state)
+# ⚠️ No managed persistence like Cosmos DB
+# ⚠️ No per-user long-term profile learning
 '''
 
 # ─────────────────────────────────────────────
@@ -221,19 +250,21 @@ async for event in runner.run_async(
 # ─────────────────────────────────────────────
 
 MULTI_AGENT_BASIC = '''\
-from google.adk.agents import Agent, SequentialAgent, ParallelAgent
+from google.adk.agents import LlmAgent, SequentialAgent, ParallelAgent
 
-# ADK: Fixed orchestration patterns
-data_agent = Agent(
+# ADK: Workflow agents for deterministic flow control
+data_agent = LlmAgent(
     name="data_analyst",
-    model="gemini-2.0-flash",
+    model="gemini-2.5-flash",
+    description="Analyzes supply chain data from Snowflake.",
     instruction="Analyze supply chain data.",
     tools=[query_snowflake],
 )
 
-fulfillment_agent = Agent(
+fulfillment_agent = LlmAgent(
     name="fulfillment_manager",
-    model="gemini-2.0-flash",
+    model="gemini-2.5-flash",
+    description="Manages order fulfillment via BlueYonder.",
     instruction="Manage BlueYonder fulfillment.",
     tools=[check_order_status],
 )
@@ -249,6 +280,15 @@ parallel = ParallelAgent(
     name="parallel_analysis",
     sub_agents=[data_agent, fulfillment_agent],
 )
+
+# LLM-driven transfer: agents can delegate to each other
+# via sub_agents on an LlmAgent (dynamic routing)
+router = LlmAgent(
+    name="router",
+    model="gemini-2.5-flash",
+    instruction="Route to the right specialist.",
+    sub_agents=[data_agent, fulfillment_agent],
+)
 '''
 
 MULTI_AGENT_PATTERNS = '''\
@@ -261,17 +301,24 @@ loop = LoopAgent(
     max_iterations=3,
 )
 
-# ❌ No graph-based orchestration
-# ❌ No deterministic routing with conditions
-# ❌ No built-in fan-out/fan-in with aggregation
-# ❌ No human-in-the-loop checkpoint
-# → For complex patterns, must use A2A protocol
-#   (Agent-to-Agent) with separate HTTP services
+# ADK 2.0 Alpha: Graph-based workflows
+# (New in ADK 2.0 — similar to MAF graph orchestration)
+# https://google.github.io/adk-docs/workflows/
+# Features: graph routes, data handling, human input,
+#           collaborative agents, dynamic workflows
 
-# A2A requires:
-# - Each agent as separate HTTP server
-# - Manual message routing
-# - External orchestration layer
+# Custom agents via BaseAgent for unique logic
+from google.adk.agents import BaseAgent
+
+class CustomRouter(BaseAgent):
+    """Custom agent with your own execution logic."""
+    async def _run_async_impl(self, ctx):
+        # Implement custom routing, validation, etc.
+        pass
+
+# A2A Protocol for cross-framework agent communication
+# Built-in support for exposing/consuming A2A agents
+# https://google.github.io/adk-docs/a2a/
 '''
 
 # ─────────────────────────────────────────────
@@ -287,65 +334,80 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# No standard hosting adapter — manual server setup
+# ADK provides built-in API server via CLI
 EXPOSE 8080
 
-# Must build your own HTTP server or use adk cli
 CMD ["adk", "api_server", \\
      "--agent", "app.agent", \\
      "--host", "0.0.0.0", \\
      "--port", "8080"]
+
+# Also available:
+# adk web  — launches built-in Dev UI
+# adk run  — CLI-based agent interaction
 '''
 
 DEPLOY_CLOUD_RUN = '''\
-# Deploy to Google Cloud Run — manual setup
+# Deploy to Google Cloud — multiple options
 
-# Build and push container
+# Option 1: Vertex AI Agent Engine (managed)
+# https://google.github.io/adk-docs/deploy/agent-engine/
+# Fully managed agent hosting on Google Cloud
+
+# Option 2: Cloud Run
 gcloud builds submit --tag gcr.io/$PROJECT/supply-chain-agent
 
-# Deploy to Cloud Run
 gcloud run deploy supply-chain-agent \\
     --image gcr.io/$PROJECT/supply-chain-agent \\
     --platform managed \\
-    --region us-central1 \\
-    --allow-unauthenticated
+    --region us-central1
 
-# Manual configuration required for:
-# ⚠️ Authentication (Cloud IAM, manual setup)
-# ⚠️ Monitoring (Cloud Monitoring, separate config)
-# ⚠️ Scaling (Cloud Run settings)
-# ⚠️ No built-in agent evaluation
-# ⚠️ No prompt optimization pipeline
+# Option 3: GKE (Kubernetes)
+# https://google.github.io/adk-docs/deploy/gke/
+
+# Option 4: Agent Starter Pack
+# Pre-configured deployment templates
+# https://google.github.io/adk-docs/deploy/agent-engine/asp/
+
+# ADK deployment features:
+# ✅ Vertex AI Agent Engine (managed hosting)
+# ✅ Cloud Run (serverless containers)
+# ✅ GKE (Kubernetes orchestration)
+# ✅ Agent Starter Pack (templates)
+# ⚠️ Authentication via Cloud IAM (manual setup)
 '''
 
 DEPLOY_NO_EVAL = '''\
-# ADK: No built-in evaluation framework
-# Must build custom evaluation pipeline
+# ADK: Built-in evaluation framework
+# https://google.github.io/adk-docs/evaluate/
 
-import json
+# ADK provides eval criteria and user simulation:
+# - Run via CLI: adk eval
+# - Run via Dev UI: adk web (Evaluation tab)
 
-# Manual test case execution
+# Define test cases with expected trajectories
 test_cases = [
-    {"input": "What is SKU-4521 inventory?", "expected": "..."},
-    {"input": "Reschedule order ORD-789", "expected": "..."},
+    {
+        "input": "What is SKU-4521 inventory?",
+        "expected_tool_calls": ["query_inventory"],
+        "expected_response_contains": "SKU-4521",
+    },
 ]
 
-results = []
-for tc in test_cases:
-    # Run agent manually
-    response = await run_agent(tc["input"])
-    # Custom metric calculation
-    results.append({
-        "input": tc["input"],
-        "output": response,
-        "score": custom_similarity(response, tc["expected"]),
-    })
+# Evaluation criteria include:
+# ✅ Response quality assessment
+# ✅ Tool call trajectory evaluation
+# ✅ User simulation for multi-turn testing
+# ✅ Safety evaluation patterns
 
-# ❌ No built-in evaluators (intent, task, groundedness)
-# ❌ No prompt optimization from production traces
-# ❌ No dataset harvesting from traces
-# ❌ No A/B testing framework
-# → All quality assurance is manual
+# Deploy evaluation:
+# $ adk eval --agent app.agent --test test_cases.json
+
+# ⚠️ Less comprehensive than MAF eval:
+# - No prompt optimization from production traces
+# - No dataset harvesting from live traffic
+# - No built-in A/B testing framework
+# - No enterprise metrics (intent, groundedness)
 '''
 
 # ─────────────────────────────────────────────

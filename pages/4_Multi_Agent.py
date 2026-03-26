@@ -58,14 +58,14 @@ render_comparison(
         "- **Switch-case routing** — Deterministic branching based on context"
     ),
     maf_code=maf.MULTI_AGENT_PATTERNS,
-    adk_title="Limited Patterns (A2A for Complex)",
+    adk_title="Workflow Agents + LLM Transfer + ADK 2.0 Graph",
     adk_description=(
-        "ADK's built-in patterns are limited to basic Sequential/Parallel/Loop.\n\n"
-        "❌ No graph-based orchestration\n"
-        "❌ No deterministic conditional routing\n"
-        "❌ No built-in human-in-the-loop\n"
-        "❌ No fan-out/fan-in with aggregation\n\n"
-        "For complex patterns, ADK requires **A2A protocol** — each agent as a separate HTTP service."
+        "ADK offers multiple orchestration approaches:\n\n"
+        "- **Workflow agents** — SequentialAgent, ParallelAgent, LoopAgent\n"
+        "- **LLM-driven transfer** — Dynamic routing via sub_agents\n"
+        "- **Custom agents** — Extend BaseAgent for custom logic\n"
+        "- **ADK 2.0 Alpha** — Graph-based workflows with routes, data handling, human input\n"
+        "- **A2A protocol** — Cross-framework agent communication"
     ),
     adk_code=adk.MULTI_AGENT_PATTERNS,
 )
@@ -122,26 +122,24 @@ with col_adk:
         """
         ```
         ┌──────────────────────────────────────┐
-        │       Fixed Pattern Agents           │
+        │     ADK Orchestration Options        │
         │                                      │
-        │   SequentialAgent:                   │
-        │   Agent A ──► Agent B ──► Agent C    │
+        │   Workflow Agents:                   │
+        │   Sequential: A ──► B ──► C          │
+        │   Parallel:   A ──┐                  │
+        │               B ──┼──► [Results]     │
+        │               C ──┘                  │
+        │   Loop: A ──► repeat (max N)         │
         │                                      │
-        │   ParallelAgent:                     │
-        │   Agent A ──┐                        │
-        │   Agent B ──┼──► [Results list]      │
-        │   Agent C ──┘                        │
+        │   LLM-driven Transfer:               │
+        │   Router → sub_agents=[A, B, C]      │
+        │   (LLM decides which agent to call)  │
         │                                      │
-        │   LoopAgent:                         │
-        │   Agent A ──► repeat (max N)         │
+        │   ADK 2.0: Graph Workflows (Alpha)   │
+        │   Routes, data handling, human input │
         │                                      │
-        │   Complex? Use A2A:                  │
-        │   ┌───────┐    ┌───────┐             │
-        │   │HTTP   │◄──►│HTTP   │             │
-        │   │Server │    │Server │             │
-        │   │Agent A│    │Agent B│             │
-        │   └───────┘    └───────┘             │
-        │   ⚠️ Separate services required      │
+        │   A2A Protocol:                      │
+        │   Cross-framework interoperability   │
         └──────────────────────────────────────┘
         ```
         """
@@ -151,10 +149,123 @@ with col_adk:
 render_advantage(
     "Multi-Agent Orchestration",
     [
-        "<strong>Graph-based orchestration</strong> — Flexible workflow graphs with conditional routing; ADK has only fixed Sequential/Parallel/Loop",
+        "<strong>Mature graph orchestration</strong> — Production-ready graph workflows with checkpointing; ADK 2.0 graph is in Alpha",
         "<strong>Fan-out / Fan-in</strong> — Parallel agent execution with result aggregation built-in",
-        "<strong>Human-in-the-Loop</strong> — Checkpoint-based approval workflow; ADK has no equivalent",
-        "<strong>Deterministic routing</strong> — Type-safe conditional edges between agents; ADK requires A2A (separate HTTP services)",
-        "<strong>Single process</strong> — All agents run in one workflow; ADK A2A requires separate deployments for each agent",
+        "<strong>Human-in-the-Loop</strong> — Checkpoint-based approval workflow built into graph",
+        "<strong>Durable Tasks</strong> — Long-running workflow orchestration via durable task framework",
+        "<strong>Time-travel debugging</strong> — Replay and inspect workflow execution at any checkpoint",
     ],
 )
+
+st.markdown("---")
+
+# ── ADK Unique Features: Orchestration ─────────────────────────────
+st.markdown("### 🌟 Features Unique to Google ADK — Orchestration")
+
+with st.expander("🔍 ADK-Only: Callbacks — Deep lifecycle hooks", expanded=False):
+    st.markdown(
+        """
+        ADK provides a **rich callback system** with hooks at every stage of agent execution:
+
+        - `before_model_callback` — Run code before the LLM is called
+        - `after_model_callback` — Intercept/modify LLM responses
+        - `before_tool_callback` — Validate or modify tool inputs
+        - `after_tool_callback` — Process tool outputs before returning
+
+        ```python
+        def log_model_call(callback_context, llm_request):
+            print(f"Calling model with {len(llm_request.contents)} messages")
+            return None  # Continue normally
+
+        agent = LlmAgent(
+            name="monitored_agent",
+            model="gemini-2.5-flash",
+            before_model_callback=log_model_call,
+        )
+        ```
+
+        **Use cases:** Logging, security filtering, input validation,
+        cost tracking, response modification.
+
+        **MAF equivalent:** Middleware pipeline provides similar request/response
+        interception but at a different abstraction level.
+        """
+    )
+
+with st.expander("🔍 ADK-Only: Planners — Built-in reasoning strategies", expanded=False):
+    st.markdown(
+        """
+        ADK includes built-in **planner** support for multi-step reasoning:
+
+        **BuiltInPlanner** — Uses Gemini's native thinking feature:
+        ```python
+        from google.adk.planners import BuiltInPlanner
+        from google.genai.types import ThinkingConfig
+
+        agent = LlmAgent(
+            model="gemini-2.5-flash",
+            planner=BuiltInPlanner(
+                thinking_config=ThinkingConfig(
+                    include_thoughts=True,
+                    thinking_budget=1024,
+                )
+            ),
+        )
+        ```
+
+        **PlanReActPlanner** — Structured plan/action/reasoning format:
+        ```python
+        from google.adk.planners import PlanReActPlanner
+
+        agent = LlmAgent(
+            model="gemini-2.5-flash",
+            planner=PlanReActPlanner(),
+        )
+        ```
+
+        **MAF equivalent:** No built-in planner abstraction — similar behavior
+        can be achieved through prompt engineering or custom middleware.
+        """
+    )
+
+with st.expander("🔍 ADK-Only: A2A Protocol — Cross-framework agent interoperability", expanded=False):
+    st.markdown(
+        """
+        The **Agent-to-Agent (A2A) Protocol** is an open standard for agent
+        communication across different frameworks:
+
+        - **Expose ADK agents** as A2A-compatible services
+        - **Consume external agents** from any A2A-compatible framework
+        - **Cross-framework interop** — ADK agents can talk to MAF agents and vice versa
+
+        ```python
+        # Expose an ADK agent as A2A service
+        # https://google.github.io/adk-docs/a2a/quickstart-exposing/
+
+        # Consume an A2A agent from ADK
+        # https://google.github.io/adk-docs/a2a/quickstart-consuming/
+        ```
+
+        **Note:** MAF also has `agent-framework-a2a` package for A2A support.
+        A2A is an open standard that both frameworks support.
+        """
+    )
+
+with st.expander("🔍 ADK-Only: Gemini Live API Toolkit — Real-time multimodal streaming", expanded=False):
+    st.markdown(
+        """
+        ADK provides native support for **bidirectional streaming** with
+        the Gemini Live API Toolkit:
+
+        - **Audio streaming** — Real-time voice interaction
+        - **Video streams** — Process video input
+        - **Image handling** — Multimodal conversations
+        - **Low latency** — Designed for real-time experiences
+
+        This enables building voice assistants, video analysis agents,
+        and interactive multimodal applications.
+
+        **MAF equivalent:** SSE streaming for text is built-in,
+        but real-time audio/video streaming requires custom implementation.
+        """
+    )

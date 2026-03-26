@@ -49,23 +49,23 @@ render_comparison(
 # ── Section 2: Long-term Memory ────────────────────────────────────
 render_comparison(
     section_title="3.2 — Long-term Memory & User Profiles",
-    maf_title="ChatSummary + UserProfile Memory",
+    maf_title="Multiple Persistence Backends",
     maf_description=(
-        "MAF provides **built-in long-term memory**:\n\n"
-        "- **ChatSummaryMemory** — Automatically summarizes conversations for continuity\n"
-        "- **UserProfileMemory** — Learns and stores user preferences over time\n"
-        "- **Per-user isolation** — `{{$userId}}` scoping for multi-tenant apps\n"
-        "- **Embedding-based retrieval** — Semantic search over past interactions"
+        "MAF provides **built-in persistence** with multiple backends:\n\n"
+        "- **Azure Cosmos DB** — Managed cloud persistence for threads\n"
+        "- **Redis** — Fast key-value state storage\n"
+        "- **Mem0** — Semantic long-term memory with embeddings\n"
+        "- **Per-user isolation** — Scoped storage for multi-tenant apps"
     ),
     maf_code=maf.MEMORY_LONG_TERM,
-    adk_title="Manual State Dictionary",
+    adk_title="State + Memory Services + Context Features",
     adk_description=(
-        "ADK provides only a **simple key-value state dict** per session.\n\n"
-        "❌ No automatic conversation summarization\n"
-        "❌ No user profile learning\n"
-        "❌ No embedding-based memory retrieval\n"
-        "❌ No per-user memory scoping\n\n"
-        "All memory patterns must be **built from scratch**."
+        "ADK provides **state, memory, and context management**:\n\n"
+        "- `output_key` — Auto-save agent outputs to state\n"
+        "- Memory service — Cross-session recall\n"
+        "- Context caching — Reduce token usage\n"
+        "- Context compression — Auto-summarize long contexts\n"
+        "- Session rewind — Time-travel to earlier states"
     ),
     adk_code=adk.MEMORY_STATE,
 )
@@ -116,17 +116,23 @@ with col_adk:
         │        Agent Runtime            │
         ├─────────────────────────────────┤
         │  Session State (dict)           │
-        │  ├─ Simple key-value store      │
-        │  └─ Manual management           │
+        │  ├─ Key-value store per session │
+        │  └─ output_key auto-save        │
+        ├─────────────────────────────────┤
+        │  Context Management             │
+        │  ├─ Context caching             │
+        │  ├─ Context compression         │
+        │  └─ Session rewind              │
         ├─────────────────────────────────┤
         │  Session Storage                │
         │  ├─ InMemory (default)          │
-        │  │   └─ ❌ Lost on restart      │
-        │  └─ Database (manual setup)     │
-        │      └─ SQLite / PostgreSQL     │
+        │  └─ Database (SQLite/Postgres)  │
         ├─────────────────────────────────┤
-        │  Long-term Memory               │
-        │  └─ ❌ Build from scratch       │
+        │  Memory Service                 │
+        │  └─ Cross-session recall        │
+        ├─────────────────────────────────┤
+        │  Artifacts                      │
+        │  └─ File/binary data management │
         └─────────────────────────────────┘
         ```
         """
@@ -136,10 +142,81 @@ with col_adk:
 render_advantage(
     "Memory & State",
     [
-        "<strong>Cosmos DB threads</strong> — Managed conversation persistence; ADK defaults to in-memory (lost on restart)",
-        "<strong>ChatSummaryMemory</strong> — Automatic conversation summarization; ADK has no equivalent",
-        "<strong>UserProfileMemory</strong> — Auto-learning user preferences; must be built manually in ADK",
-        "<strong>Per-user isolation</strong> — Built-in multi-tenant memory scoping via <code>{{$userId}}</code>",
-        "<strong>Embedding-based retrieval</strong> — Semantic search over conversation history; ADK uses simple key-value dict",
+        "<strong>Cosmos DB threads</strong> — Managed cloud persistence; ADK defaults to in-memory",
+        "<strong>Redis + Mem0 integrations</strong> — Pre-built packages for fast state and semantic memory",
+        "<strong>Per-user isolation</strong> — Built-in multi-tenant memory scoping",
+        "<strong>Production-grade persistence</strong> — Azure Cosmos DB with automatic scaling",
     ],
 )
+
+st.markdown("---")
+
+# ── ADK Unique Features: Memory & State ────────────────────────────
+st.markdown("### 🌟 Features Unique to Google ADK — Memory & Context")
+
+with st.expander("🔍 ADK-Only: Context Caching — Reduce token costs", expanded=False):
+    st.markdown(
+        """
+        ADK supports **context caching** to reduce token usage and costs.
+        Frequently used context (like system prompts or large documents)
+        can be cached and reused across requests.
+
+        This is especially valuable for agents processing large contexts repeatedly.
+
+        **MAF equivalent:** No built-in context caching — relies on model-level
+        caching if available from the provider.
+        """
+    )
+
+with st.expander("🔍 ADK-Only: Context Compression — Auto-summarize long contexts", expanded=False):
+    st.markdown(
+        """
+        When conversation history grows too long, ADK can **automatically compress
+        the context** by summarizing older messages. This keeps the agent responsive
+        without losing important conversation history.
+
+        **MAF equivalent:** Thread management handles this at the persistence layer,
+        but no built-in context compression at the agent runtime level.
+        """
+    )
+
+with st.expander("🔍 ADK-Only: Session Rewind — Time-travel debugging", expanded=False):
+    st.markdown(
+        """
+        ADK allows you to **rewind a session** to a previous state.
+        This is powerful for:
+        - **Debugging** — See what state looked like at any point
+        - **Recovery** — Roll back to a known-good state
+        - **Testing** — Replay scenarios from specific checkpoints
+
+        ```python
+        # Rewind session to a previous event
+        # https://google.github.io/adk-docs/sessions/session/rewind/
+        ```
+
+        **MAF equivalent:** Graph workflows support checkpointing and time-travel
+        at the orchestration level, but not at the session state level.
+        """
+    )
+
+with st.expander("🔍 ADK-Only: Artifacts — File and binary data management", expanded=False):
+    st.markdown(
+        """
+        ADK has a built-in **Artifact management system** for handling files
+        and binary data (images, PDFs, documents) within agent sessions:
+
+        - Save, load, and manage versioned artifacts
+        - Associate artifacts with sessions or users
+        - Handle images, documents, or generated reports
+
+        ```python
+        from google.adk.artifacts import InMemoryArtifactService
+
+        artifact_service = InMemoryArtifactService()
+        # Agents can save/load files during execution
+        ```
+
+        **MAF equivalent:** File handling via Azure Blob Storage or custom
+        tool implementations — no built-in artifact system at the framework level.
+        """
+    )

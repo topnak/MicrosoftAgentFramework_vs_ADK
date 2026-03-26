@@ -5,22 +5,26 @@
 # ─────────────────────────────────────────────
 
 AGENT_CREATION_BASIC = '''\
-from azure.ai.projects import AIProjectClient
-from azure.identity import DefaultAzureCredential
+from agent_framework.azure import AzureOpenAIResponsesClient
+from azure.identity import AzureCliCredential
+import asyncio
 
-project = AIProjectClient(
-    endpoint=os.environ["FOUNDRY_PROJECT_ENDPOINT"],
-    credential=DefaultAzureCredential(),
-)
+async def main():
+    # Create agent using the new agent-framework package
+    agent = AzureOpenAIResponsesClient(
+        endpoint=os.environ.get("AZURE_OPENAI_ENDPOINT"),
+        credential=AzureCliCredential(),
+    ).as_agent(
+        name="supply-chain-assistant",
+        instructions="""You are an enterprise supply chain assistant.
+        Help users query inventory, track orders, and optimize
+        fulfillment using Snowflake and BlueYonder data.""",
+    )
 
-agent = project.agents.create_agent(
-    model=os.environ["MODEL_DEPLOYMENT_NAME"],
-    name="supply-chain-assistant",
-    instructions="""You are an enterprise supply chain assistant.
-    Help users query inventory, track orders, and optimize
-    fulfillment using Snowflake and BlueYonder data.""",
-)
-print(f"Agent created: {agent.id}")
+    result = await agent.run("What is our current inventory?")
+    print(result)
+
+asyncio.run(main())
 '''
 
 AGENT_YAML = '''\
@@ -200,27 +204,38 @@ run = project.agents.runs.create_and_process(
 '''
 
 MEMORY_LONG_TERM = '''\
-from agent_framework.memory import ChatSummaryMemory, UserProfileMemory
+# MAF supports multiple memory/state backends:
+# - Azure Cosmos DB for persistent threads/state
+# - Redis for fast session state
+# - Mem0 for long-term memory with embeddings
 
-# Long-term memory with automatic summarization
-chat_memory = ChatSummaryMemory(
-    model="text-embedding-3-small",
-    max_tokens=2000,
+# Using agent-framework with Cosmos DB persistence
+from agent_framework.azure_cosmos import CosmosSessionStore
+
+store = CosmosSessionStore(
+    endpoint=os.environ["COSMOS_ENDPOINT"],
+    credential=DefaultAzureCredential(),
+    database_name="agent_memory",
+    container_name="sessions",
 )
 
-# User profile memory — learns preferences over time
-profile_memory = UserProfileMemory(
-    model="text-embedding-3-small",
-    scope="{{$userId}}",  # Per-user isolation
+# Or Redis for fast key-value state
+from agent_framework.redis import RedisSessionStore
+
+redis_store = RedisSessionStore(
+    redis_url="redis://localhost:6379",
 )
 
-agent = AgentBuilder() \\
-    .with_memory(chat_memory) \\
-    .with_memory(profile_memory) \\
-    .build()
+# Mem0 integration for semantic long-term memory
+from agent_framework.mem0 import Mem0MemoryStore
+
+mem0_store = Mem0MemoryStore(
+    api_key=os.environ["MEM0_API_KEY"],
+)
 
 # Memory persists across sessions automatically
-# User profiles accumulate preferences over time
+# Thread history maintained in Cosmos DB
+# User context accumulates over time via Mem0
 '''
 
 # ─────────────────────────────────────────────
@@ -228,41 +243,32 @@ agent = AgentBuilder() \\
 # ─────────────────────────────────────────────
 
 MULTI_AGENT_GRAPH = '''\
-from agent_framework import Agent, AgentWorkflow
+from agent_framework import AgentWorkflow
 
-# Define specialized agents
-data_agent = Agent(
-    name="data-analyst",
-    instructions="Query and analyze supply chain data from Snowflake.",
-    tools=[query_snowflake_tool],
-)
+# Graph-based orchestration with streaming,
+# checkpointing, human-in-the-loop, and time-travel
 
-fulfillment_agent = Agent(
-    name="fulfillment-manager",
-    instructions="Manage order fulfillment via BlueYonder.",
-    tools=[blueyonder_tool],
-)
-
-supervisor = Agent(
-    name="supervisor",
-    instructions="""Route requests to the right specialist:
-    - Data questions → data-analyst
-    - Order management → fulfillment-manager""",
-)
-
-# Graph-based orchestration
+# Define the workflow graph
 workflow = AgentWorkflow()
-workflow.add_node("supervisor", supervisor)
+
+# Add agent nodes — each is a specialized agent
+workflow.add_node("supervisor", supervisor_agent)
 workflow.add_node("data_analyst", data_agent)
 workflow.add_node("fulfillment", fulfillment_agent)
+workflow.add_node("summarizer", summarizer_agent)
 
-# Deterministic routing
+# Deterministic routing with conditions
 workflow.add_edge("supervisor", "data_analyst", condition="data_query")
 workflow.add_edge("supervisor", "fulfillment", condition="order_mgmt")
 workflow.add_edge("data_analyst", "supervisor")  # Report back
 workflow.add_edge("fulfillment", "supervisor")
 
-result = await workflow.run("Show delayed orders and reschedule them")
+# Run with streaming and checkpointing
+result = await workflow.run(
+    "Show delayed orders and reschedule them",
+    stream=True,
+    checkpoint=True,  # Enable time-travel debugging
+)
 '''
 
 MULTI_AGENT_PATTERNS = '''\

@@ -24,6 +24,7 @@ with st.sidebar:
     st.image("https://img.icons8.com/fluency/96/artificial-intelligence.png", width=64)
     st.markdown("### 🗂️ Story Sections")
     st.markdown("""
+    0. 📚 What Is MAF vs ADK
     1. 🏗️ Agent Creation
     2. 🔧 Tool Integration
     3. 🧠 Memory & State
@@ -84,14 +85,14 @@ with col2:
         <div class="adk-col">
         <h3 style="color:#34A853;">Google Agent Development Kit</h3>
         <ul>
-        <li>Python-first SDK (no .NET support)</li>
-        <li>Vertex AI / Cloud Run deployment</li>
-        <li>Runner-based invocation pattern</li>
-        <li>Built-in: Google Search only</li>
-        <li>Sequential / Parallel / Loop patterns</li>
-        <li>Session-based state (manual memory)</li>
-        <li>Manual credential management</li>
-        <li>No built-in eval or prompt optimization</li>
+        <li>Multi-language: Python, TypeScript, Go, Java</li>
+        <li>Vertex AI / Cloud Run / GKE deployment</li>
+        <li>Runner-based invocation with event streaming</li>
+        <li>Built-in: Google Search, code execution</li>
+        <li>Sequential / Parallel / Loop + Graph (2.0)</li>
+        <li>Session + state + memory services</li>
+        <li>Callbacks, planners, artifacts, plugins</li>
+        <li>Built-in eval with criteria & user simulation</li>
         </ul>
         </div>
         """,
@@ -111,18 +112,18 @@ matrix_data = {
         "Streaming",
         "Built-in Web Search",
         "Built-in RAG / Vector Search",
-        "Code Interpreter (Sandbox)",
+        "Code Execution (Sandbox)",
         "MCP Tool Support",
         "Long-term Memory",
-        "User Profile Memory",
         "Multi-Agent Patterns",
         "Graph-based Orchestration",
         "Human-in-the-Loop",
         "Managed Identity",
         "Declarative Agent Config",
         "Built-in Evaluation",
-        "Prompt Optimization",
-        "Dataset from Traces",
+        "Callbacks / Lifecycle Hooks",
+        "Built-in Dev UI",
+        "A2A Protocol",
         "Fabric / FabricIQ",
         "Snowflake Integration",
         "BlueYonder Integration",
@@ -134,41 +135,41 @@ matrix_data = {
         "SSE streaming ✅",
         "WebSearchPreview ✅",
         "Azure AI Search ✅",
-        "Built-in sandbox ✅",
+        "Built-in Code Interpreter ✅",
         "Native MCP ✅",
-        "ChatSummary + UserProfile ✅",
-        "Auto-learning ✅",
+        "Thread + Cosmos DB + Mem0 ✅",
         "Graph + Fan-out/in + Loop ✅",
-        "Yes ✅",
+        "Yes — with checkpointing ✅",
         "Built-in checkpoint ✅",
         "Azure Managed Identity ✅",
         "agent.yaml ✅",
         "Intent, Task, Groundedness ✅",
-        "Auto from traces ✅",
-        "Production harvesting ✅",
+        "Middleware pipeline ✅",
+        "DevUI package ✅",
+        "agent-framework-a2a ✅",
         "Native (same identity) ✅",
         "MCP + Function Tool ✅",
         "Function Tool ✅",
     ],
     "Google ADK": [
-        "Python only ⚠️",
-        "Python code only ⚠️",
+        "Python, TypeScript, Go, Java ✅",
+        "Python code + Agent Config ✅",
         "Runner.run_async() ⚠️",
-        "Event iteration ✅",
-        "Google Search only ⚠️",
-        "Manual build ❌",
-        "Manual build ❌",
-        "MCPToolset ✅",
-        "Manual build ❌",
-        "Manual build ❌",
-        "Sequential + Parallel + Loop ⚠️",
-        "No ❌",
-        "Manual build ❌",
-        "Manual (GCP IAM) ⚠️",
-        "None ❌",
-        "Manual build ❌",
-        "Manual build ❌",
-        "Manual build ❌",
+        "Gemini Live API + Events ✅",
+        "Google Search Grounding ✅",
+        "Vertex AI Search Grounding ⚠️",
+        "BuiltInCodeExecutor ✅",
+        "MCP Tools ✅",
+        "Memory Service ⚠️",
+        "Sequential + Parallel + Loop ✅",
+        "ADK 2.0 Alpha ⚠️",
+        "Graph workflows (2.0) ⚠️",
+        "GCP IAM (manual) ⚠️",
+        "Agent Config ⚠️",
+        "Eval Criteria + User Sim ✅",
+        "Rich callback system ✅",
+        "adk web UI ✅",
+        "Native A2A Protocol ✅",
         "Custom connector ❌",
         "Custom connector ⚠️",
         "Custom connector ⚠️",
