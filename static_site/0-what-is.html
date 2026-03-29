@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What Is MAF vs ADK — MAF vs ADK</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<nav class="sidebar">
+    <h3>🗂️ MAF vs ADK</h3>
+    <ul><li><a href="index.html">🤖 Home</a></li>
+<li><a href="0-what-is.html" class="active">📚 What Is MAF vs ADK</a></li>
+<li><a href="1-agent-creation.html">🏗️ Agent Creation</a></li>
+<li><a href="2-tool-integration.html">🔧 Tool Integration</a></li>
+<li><a href="3-memory-state.html">🧠 Memory & State</a></li>
+<li><a href="4-multi-agent.html">🔀 Multi-Agent</a></li>
+<li><a href="5-deployment.html">🚀 Deployment</a></li>
+<li><a href="6-third-party.html">🔗 3rd Party</a></li>
+<li><a href="7-cross-model.html">🔄 Cross-Model</a></li>
+<li><a href="8-foundry-vs-vertex.html">☁️ Foundry vs Vertex</a></li>
+</ul>
+    <div class="sidebar-meta">
+        <p><strong>Baseline:</strong> MAF v2 Responses API</p>
+        <p><strong>Compared with:</strong> Google ADK</p>
+        <p style="margin-top:1rem;">March 2026</p>
+    </div>
+</nav>
+<div class="mobile-nav">
+    <select onchange="location.href=this.value">
+        <option value="index.html">🤖 Home</option>
+<option value="0-what-is.html" selected>📚 What Is MAF vs ADK</option>
+<option value="1-agent-creation.html">🏗️ Agent Creation</option>
+<option value="2-tool-integration.html">🔧 Tool Integration</option>
+<option value="3-memory-state.html">🧠 Memory & State</option>
+<option value="4-multi-agent.html">🔀 Multi-Agent</option>
+<option value="5-deployment.html">🚀 Deployment</option>
+<option value="6-third-party.html">🔗 3rd Party</option>
+<option value="7-cross-model.html">🔄 Cross-Model</option>
+<option value="8-foundry-vs-vertex.html">☁️ Foundry vs Vertex</option>
+
+    </select>
+</div>
+<main class="main-content">
+
+<h1 class="section-header">📚 What Is Microsoft Agent Framework vs Google ADK?</h1>
+<p>Before comparing features, let's understand <strong>what each framework is</strong>,
+how they're structured, and the architectural layers they provide.</p>
+<hr>
+
+<div class="columns">
+<div class="maf-col">
+    <h3 style="color:#4A90D9;">Microsoft Agent Framework (MAF)</h3>
+    <p>A comprehensive <strong>multi-language framework</strong> for building,
+    orchestrating, and deploying AI agents with support for both <strong>Python and .NET</strong>.</p>
+    <p>Originally evolved from <strong>Semantic Kernel</strong> and <strong>AutoGen</strong>,
+    MAF provides everything from simple chat agents to complex multi-agent workflows.</p>
+    <ul>
+    <li><strong>Package:</strong> <code>pip install agent-framework</code></li>
+    <li><strong>Languages:</strong> Python &amp; .NET (C#)</li>
+    <li><strong>API:</strong> OpenAI Responses protocol</li>
+    <li><strong>Cloud:</strong> Azure AI Foundry</li>
+    </ul>
+</div>
+<div class="adk-col">
+    <h3 style="color:#34A853;">Google Agent Development Kit (ADK)</h3>
+    <p>A flexible and modular framework for developing and deploying AI agents.
+    While optimized for <strong>Gemini and the Google ecosystem</strong>,
+    ADK is model-agnostic and deployment-agnostic.</p>
+    <p>Designed to make agent development feel more like <strong>software development</strong>.</p>
+    <ul>
+    <li><strong>Package:</strong> <code>pip install google-adk</code></li>
+    <li><strong>Languages:</strong> Python, TypeScript, Go, Java</li>
+    <li><strong>API:</strong> Runner + Event pattern</li>
+    <li><strong>Cloud:</strong> Vertex AI / Cloud Run / GKE</li>
+    </ul>
+</div>
+</div>
+<hr>
+
+<h2>🏛️ Architecture Layers — Side by Side</h2>
+<div class="columns">
+<div>
+    <div class="maf-col"><h4 style="color:#4A90D9;">MAF Architecture — 7 Layers</h4></div>
+    <pre><code class="language-text">┌─────────────────────────────────────────┐
+│  Layer 7: DEPLOYMENT &amp; HOSTING          │
+│  Azure AI Foundry · Containers · DevUI  │
+├─────────────────────────────────────────┤
+│  Layer 6: EVALUATION &amp; OPTIMIZATION     │
+│  Built-in Evaluators · Prompt Optimizer │
+├─────────────────────────────────────────┤
+│  Layer 5: ORCHESTRATION                 │
+│  Graph Workflows · Checkpointing        │
+│  Human-in-the-Loop · Time-travel        │
+├─────────────────────────────────────────┤
+│  Layer 4: MEMORY &amp; STATE                │
+│  Thread Persistence · Long-term Memory  │
+│  Azure Cosmos DB · Redis · Mem0         │
+├─────────────────────────────────────────┤
+│  Layer 3: TOOLS &amp; INTEGRATIONS          │
+│  Function Tools · MCP · AI Search       │
+│  Code Interpreter · Web Search          │
+├─────────────────────────────────────────┤
+│  Layer 2: AGENT CORE                    │
+│  AzureOpenAIResponsesClient · .as_agent │
+│  OpenAI Responses · Middleware          │
+├─────────────────────────────────────────┤
+│  Layer 1: PROVIDERS                     │
+│  OpenAI · Azure OpenAI · Anthropic      │
+│  Bedrock · Ollama · Foundry Local       │
+└─────────────────────────────────────────┘</code></pre>
+</div>
+<div>
+    <div class="adk-col"><h4 style="color:#34A853;">ADK Architecture — 7 Layers</h4></div>
+    <pre><code class="language-text">┌─────────────────────────────────────────┐
+│  Layer 7: DEPLOYMENT                    │
+│  Vertex AI Agent Engine · Cloud Run     │
+│  GKE · Docker · Agent Starter Pack      │
+├─────────────────────────────────────────┤
+│  Layer 6: EVALUATION &amp; SAFETY           │
+│  Built-in Eval Criteria · User Sim      │
+│  Safety &amp; Security Patterns             │
+├─────────────────────────────────────────┤
+│  Layer 5: ORCHESTRATION                 │
+│  SequentialAgent · ParallelAgent        │
+│  LoopAgent · ADK 2.0 Graph Workflows   │
+├─────────────────────────────────────────┤
+│  Layer 4: SESSIONS &amp; MEMORY             │
+│  Session Service · State · Artifacts    │
+│  Context Caching · Compression          │
+├─────────────────────────────────────────┤
+│  Layer 3: TOOLS &amp; INTEGRATIONS          │
+│  Function Tools · MCP · OpenAPI Tools   │
+│  Google Search · Code Execution         │
+├─────────────────────────────────────────┤
+│  Layer 2: AGENT CORE                    │
+│  LlmAgent · Runner · Callbacks          │
+│  Events · Gemini Live Streaming         │
+├─────────────────────────────────────────┤
+│  Layer 1: MODELS                        │
+│  Gemini · Claude · Vertex AI-hosted     │
+│  Ollama · vLLM · LiteLLM               │
+└─────────────────────────────────────────┘</code></pre>
+</div>
+</div>
+<hr>
+
+<h2>📋 Layer-by-Layer Comparison</h2>
+<table><thead><tr><th>Layer</th><th>MAF Approach</th><th>ADK Approach</th><th>Key Difference</th></tr></thead><tbody><tr><td>7 — Deployment</td><td>Azure AI Foundry, agent.yaml, DevUI</td><td>Vertex AI Agent Engine, Cloud Run, GKE, CLI</td><td>MAF: Azure-native; ADK: GCP-native with flexible self-hosting</td></tr>
+<tr><td>6 — Evaluation</td><td>Built-in evaluators, prompt optimizer</td><td>Eval criteria, user simulation, safety patterns</td><td>Both built-in eval; MAF adds prompt optimization from traces</td></tr>
+<tr><td>5 — Orchestration</td><td>Graph workflows, checkpointing, HITL</td><td>Sequential/Parallel/Loop + Graph (2.0)</td><td>MAF: Graph-first; ADK: Workflow agents + graph in 2.0</td></tr>
+<tr><td>4 — Memory</td><td>Thread persistence, Cosmos DB, Redis, Mem0</td><td>SessionService, state, memory, artifacts, caching</td><td>MAF: Managed persistence; ADK: Flexible manual sessions</td></tr>
+<tr><td>3 — Tools</td><td>Function, MCP, AI Search, Code Interpreter</td><td>Function, MCP, OpenAPI, Google Search, code exec</td><td>MAF: Enterprise tools; ADK: Broader plugin ecosystem</td></tr>
+<tr><td>2 — Agent Core</td><td>AzureOpenAIResponsesClient, middleware</td><td>LlmAgent, Runner, callbacks, events</td><td>MAF: OpenAI compatible; ADK: Custom runner + callbacks</td></tr>
+<tr><td>1 — Providers</td><td>OpenAI, Azure, Anthropic, Bedrock, Ollama</td><td>Gemini, Claude, Vertex, Ollama, vLLM, LiteLLM</td><td>Similar breadth; each deeper in own ecosystem</td></tr>
+</tbody></table>
+<hr>
+
+<h2>📦 Package Ecosystem</h2>
+<div class="columns">
+<div>
+    <div class="maf-col"><h4 style="color:#4A90D9;">MAF Python Packages</h4></div>
+    <table><thead><tr><th>Package</th><th>Purpose</th></tr></thead><tbody><tr><td><code>agent-framework</code></td><td>Meta-package (installs all)</td></tr>
+<tr><td><code>agent-framework-core</code></td><td>Base classes, interfaces</td></tr>
+<tr><td><code>agent-framework-openai</code></td><td>OpenAI/Azure OpenAI provider</td></tr>
+<tr><td><code>agent-framework-azure-ai</code></td><td>Azure AI Foundry integration</td></tr>
+<tr><td><code>agent-framework-anthropic</code></td><td>Anthropic Claude provider</td></tr>
+<tr><td><code>agent-framework-ollama</code></td><td>Ollama local models</td></tr>
+<tr><td><code>agent-framework-orchestrations</code></td><td>Graph workflows</td></tr>
+<tr><td><code>agent-framework-foundry</code></td><td>Foundry deployment</td></tr>
+<tr><td><code>agent-framework-azure-cosmos</code></td><td>Cosmos DB persistence</td></tr>
+<tr><td><code>agent-framework-redis</code></td><td>Redis state/memory</td></tr>
+<tr><td><code>agent-framework-mem0</code></td><td>Mem0 memory integration</td></tr>
+<tr><td><code>agent-framework-a2a</code></td><td>Agent-to-Agent protocol</td></tr>
+</tbody></table>
+</div>
+<div>
+    <div class="adk-col"><h4 style="color:#34A853;">ADK SDKs</h4></div>
+    <table><thead><tr><th>Package/Repo</th><th>Purpose</th></tr></thead><tbody><tr><td><code>google-adk</code> (Python)</td><td>Main Python SDK</td></tr>
+<tr><td><code>adk-js</code> (TypeScript)</td><td>TypeScript SDK</td></tr>
+<tr><td><code>adk-go</code> (Go)</td><td>Go SDK</td></tr>
+<tr><td><code>adk-java</code> (Java)</td><td>Java SDK</td></tr>
+</tbody></table>
+    <h4>Key Python Modules</h4>
+    <table><thead><tr><th>Module</th><th>Purpose</th></tr></thead><tbody><tr><td><code>google.adk.agents</code></td><td>LlmAgent, workflow agents</td></tr>
+<tr><td><code>google.adk.runners</code></td><td>Runner execution engine</td></tr>
+<tr><td><code>google.adk.sessions</code></td><td>Session/state management</td></tr>
+<tr><td><code>google.adk.tools</code></td><td>Tool definitions</td></tr>
+<tr><td><code>google.adk.planners</code></td><td>BuiltInPlanner, PlanReAct</td></tr>
+<tr><td><code>google.adk.callbacks</code></td><td>Lifecycle hooks</td></tr>
+<tr><td><code>google.adk.artifacts</code></td><td>File/binary management</td></tr>
+</tbody></table>
+</div>
+</div>
+<hr>
+
+<h2>🎯 Design Philosophy</h2>
+<div class="columns">
+<div class="maf-col">
+    <h4 style="color:#4A90D9;">MAF: Enterprise-First</h4>
+    <ol>
+    <li><strong>Managed resources</strong> — Agents are cloud resources with IDs, versioning</li>
+    <li><strong>OpenAI API compatible</strong> — OpenAI Responses protocol</li>
+    <li><strong>Azure-native security</strong> — Managed Identity, RBAC, Key Vault</li>
+    <li><strong>Multi-language</strong> — Same patterns in Python and .NET</li>
+    <li><strong>Declarative config</strong> — agent.yaml for GitOps</li>
+    <li><strong>Production-grade</strong> — Eval, prompt optimization, observability built-in</li>
+    </ol>
+</div>
+<div class="adk-col">
+    <h4 style="color:#34A853;">ADK: Developer-First</h4>
+    <ol>
+    <li><strong>Code-native</strong> — Define agents as code objects</li>
+    <li><strong>Multi-language SDKs</strong> — Python, TypeScript, Go, Java</li>
+    <li><strong>Model-agnostic</strong> — Gemini, Claude, Ollama, vLLM, LiteLLM</li>
+    <li><strong>Rich extensibility</strong> — Callbacks, plugins, skills, custom agents</li>
+    <li><strong>Built-in dev tools</strong> — adk web UI, CLI, event inspection</li>
+    <li><strong>Open protocols</strong> — MCP and A2A for cross-framework interop</li>
+    </ol>
+</div>
+</div>
+<hr>
+
+<h2>⚡ Hello World — Side by Side</h2>
+<div class="columns">
+<div>
+    <span class="framework-label-maf">Microsoft Agent Framework</span>
+    <pre><code class="language-python">import asyncio
+from agent_framework.azure import AzureOpenAIResponsesClient
+from azure.identity import AzureCliCredential
+
+async def main():
+    # Provider-leading client → .as_agent() pattern
+    agent = AzureOpenAIResponsesClient(
+        # endpoint / deployment_name / api_version from env vars
+        credential=AzureCliCredential(),
+    ).as_agent(
+        name=&quot;supply-chain-assistant&quot;,
+        instructions=&quot;&quot;&quot;You are an enterprise supply chain assistant.
+        Help users query inventory, track orders, and optimize
+        fulfillment using Snowflake and BlueYonder data.&quot;&quot;&quot;,
+    )
+
+    result = await agent.run(&quot;What is our current inventory?&quot;)
+    print(result)
+
+asyncio.run(main())</code></pre>
+</div>
+<div>
+    <span class="framework-label-adk">Google ADK</span>
+    <pre><code class="language-python">from google.adk.agents import Agent  # LlmAgent aliased as Agent
+from google.adk.runners import Runner
+from google.adk.sessions import InMemorySessionService
+from google.genai import types
+
+# Agent (alias for LlmAgent) is the core component
+agent = Agent(
+    name=&quot;supply_chain_assistant&quot;,
+    model=&quot;gemini-2.5-flash&quot;,
+    description=&quot;Handles supply chain queries.&quot;,
+    instruction=&quot;&quot;&quot;You are a supply chain assistant.
+    Help users query inventory and track orders.&quot;&quot;&quot;,
+)
+
+# Create runner and session service
+session_service = InMemorySessionService()
+runner = Runner(
+    agent=agent,
+    app_name=&quot;supply_chain_app&quot;,
+    session_service=session_service,
+)
+
+# Run the agent
+content = types.Content(
+    role=&quot;user&quot;,
+    parts=[types.Part(text=&quot;What is inventory for SKU-4521?&quot;)]
+)
+
+async for event in runner.run_async(
+    user_id=&quot;user-1&quot;,
+    session_id=&quot;session-1&quot;,
+    new_message=content,
+):
+    if event.is_final_response() and event.content:
+        print(event.content.parts[0].text)</code></pre>
+</div>
+</div>
+<div class="info-box">
+    <strong>Key takeaway:</strong> MAF is more concise (managed resources, simpler API surface)
+    while ADK requires explicit Runner and Session setup but gives you more control over the execution lifecycle.
+</div>
+
+<div class="footer">
+    Built for Show &amp; Tell — Microsoft Agent Framework v2 Responses API — March 2026
+</div>
+</main>
+</body>
+</html>

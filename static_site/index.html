@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home — MAF vs ADK</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<nav class="sidebar">
+    <h3>🗂️ MAF vs ADK</h3>
+    <ul><li><a href="index.html" class="active">🤖 Home</a></li>
+<li><a href="0-what-is.html">📚 What Is MAF vs ADK</a></li>
+<li><a href="1-agent-creation.html">🏗️ Agent Creation</a></li>
+<li><a href="2-tool-integration.html">🔧 Tool Integration</a></li>
+<li><a href="3-memory-state.html">🧠 Memory & State</a></li>
+<li><a href="4-multi-agent.html">🔀 Multi-Agent</a></li>
+<li><a href="5-deployment.html">🚀 Deployment</a></li>
+<li><a href="6-third-party.html">🔗 3rd Party</a></li>
+<li><a href="7-cross-model.html">🔄 Cross-Model</a></li>
+<li><a href="8-foundry-vs-vertex.html">☁️ Foundry vs Vertex</a></li>
+</ul>
+    <div class="sidebar-meta">
+        <p><strong>Baseline:</strong> MAF v2 Responses API</p>
+        <p><strong>Compared with:</strong> Google ADK</p>
+        <p style="margin-top:1rem;">March 2026</p>
+    </div>
+</nav>
+<div class="mobile-nav">
+    <select onchange="location.href=this.value">
+        <option value="index.html" selected>🤖 Home</option>
+<option value="0-what-is.html">📚 What Is MAF vs ADK</option>
+<option value="1-agent-creation.html">🏗️ Agent Creation</option>
+<option value="2-tool-integration.html">🔧 Tool Integration</option>
+<option value="3-memory-state.html">🧠 Memory & State</option>
+<option value="4-multi-agent.html">🔀 Multi-Agent</option>
+<option value="5-deployment.html">🚀 Deployment</option>
+<option value="6-third-party.html">🔗 3rd Party</option>
+<option value="7-cross-model.html">🔄 Cross-Model</option>
+<option value="8-foundry-vs-vertex.html">☁️ Foundry vs Vertex</option>
+
+    </select>
+</div>
+<main class="main-content">
+
+<h1 style="text-align:center;">
+    <span style="color:#4A90D9;">Microsoft Agent Framework</span>
+    <span style="color:#888;"> vs </span>
+    <span style="color:#34A853;">Google ADK</span>
+</h1>
+<p style="text-align:center; color:#8899aa; font-size:1.1rem;">
+    A side-by-side comparison for enterprise conversational AI development<br>
+    with Snowflake, BlueYonder &amp; Microsoft Fabric integration
+</p>
+<hr>
+
+<div class="columns">
+<div class="maf-col">
+    <h3 style="color:#4A90D9;">Microsoft Agent Framework</h3>
+    <ul>
+    <li>Enterprise-grade SDK for Python &amp; .NET</li>
+    <li>Native Azure AI Foundry integration</li>
+    <li>OpenAI Responses protocol (streaming)</li>
+    <li>Built-in tools: AI Search, Bing, Code Interpreter</li>
+    <li>Graph-based multi-agent orchestration</li>
+    <li>Long-term memory with auto-summarization</li>
+    <li>Managed Identity — zero credential management</li>
+    <li>Built-in eval, prompt optimization, CI/CD</li>
+    </ul>
+</div>
+<div class="adk-col">
+    <h3 style="color:#34A853;">Google Agent Development Kit</h3>
+    <ul>
+    <li>Multi-language: Python, TypeScript, Go, Java</li>
+    <li>Vertex AI / Cloud Run / GKE deployment</li>
+    <li>Runner-based invocation with event streaming</li>
+    <li>Built-in: Google Search, code execution</li>
+    <li>Sequential / Parallel / Loop + Graph (2.0)</li>
+    <li>Session + state + memory services</li>
+    <li>Callbacks, planners, artifacts, plugins</li>
+    <li>Built-in eval with criteria &amp; user simulation</li>
+    </ul>
+</div>
+</div>
+<hr>
+
+<h3>📊 Feature Comparison Matrix</h3>
+<table><thead><tr><th>Capability</th><th>Microsoft Agent Framework</th><th>Google ADK</th></tr></thead><tbody><tr><td>Languages</td><td>Python &amp; .NET ✅</td><td>Python, TypeScript, Go, Java ✅</td></tr>
+<tr><td>Agent Definition</td><td>SDK + agent.yaml ✅</td><td>Python code + Agent Config ✅</td></tr>
+<tr><td>Invocation API</td><td>OpenAI Responses protocol ✅</td><td>Runner.run_async() ✅</td></tr>
+<tr><td>Streaming</td><td>SSE streaming ✅</td><td>Gemini Live API + Events ✅</td></tr>
+<tr><td>Built-in Web Search</td><td>WebSearchPreview ✅</td><td>Google Search Grounding ✅</td></tr>
+<tr><td>Built-in RAG / Vector Search</td><td>Azure AI Search ✅</td><td>Vertex AI Search Grounding ✅</td></tr>
+<tr><td>Code Execution (Sandbox)</td><td>Built-in Code Interpreter ✅</td><td>BuiltInCodeExecutor ✅</td></tr>
+<tr><td>MCP Tool Support</td><td>Native MCP ✅</td><td>MCP Tools ✅</td></tr>
+<tr><td>Long-term Memory</td><td>Session + Cosmos DB + Redis + Mem0 ✅</td><td>Memory Service + State ✅</td></tr>
+<tr><td>Multi-Agent Patterns</td><td>Graph + Fan-out/in + Loop ✅</td><td>Sequential + Parallel + Loop ✅</td></tr>
+<tr><td>Graph-based Orchestration</td><td>Yes — with checkpointing ✅</td><td>ADK 2.0 Graph Workflows ✅</td></tr>
+<tr><td>Human-in-the-Loop</td><td>Built-in checkpoint ✅</td><td>ADK 2.0 Human Input ✅</td></tr>
+<tr><td>Managed Identity</td><td>Azure Managed Identity ✅</td><td>GCP IAM + Workload Identity ✅</td></tr>
+<tr><td>Declarative Agent Config</td><td>agent.yaml ✅</td><td>Agent Config ✅</td></tr>
+<tr><td>Built-in Evaluation</td><td>Intent, Task, Groundedness ✅</td><td>Eval + User Sim + Optimization ✅</td></tr>
+<tr><td>Callbacks / Lifecycle Hooks</td><td>Middleware pipeline ✅</td><td>Rich callback system ✅</td></tr>
+<tr><td>Built-in Dev UI</td><td>DevUI package ✅</td><td>adk web UI ✅</td></tr>
+<tr><td>A2A Protocol</td><td>agent-framework-a2a ✅</td><td>Native A2A Protocol ✅</td></tr>
+<tr><td>Fabric / FabricIQ</td><td>Native (same identity) ✅</td><td>Custom connector ❌</td></tr>
+<tr><td>Snowflake Integration</td><td>MCP + Function Tool ✅</td><td>Custom connector ⚠️</td></tr>
+<tr><td>BlueYonder Integration</td><td>Function Tool ✅</td><td>Custom connector ⚠️</td></tr>
+</tbody></table>
+<hr>
+
+<h3>📖 Explore the Story</h3>
+<div class="columns-3"><a href="1-agent-creation.html" style="text-decoration:none"><div class="metric-card"><h3>🏗️ Agent Creation</h3><p>How agents are defined, configured, and invoked</p></div></a>
+<a href="2-tool-integration.html" style="text-decoration:none"><div class="metric-card"><h3>🔧 Tool Integration</h3><p>Built-in tools, custom functions, MCP servers</p></div></a>
+<a href="3-memory-state.html" style="text-decoration:none"><div class="metric-card"><h3>🧠 Memory &amp; State</h3><p>Conversation persistence, long-term memory</p></div></a>
+<a href="4-multi-agent.html" style="text-decoration:none"><div class="metric-card"><h3>🔀 Multi-Agent</h3><p>Orchestration patterns, graph workflows</p></div></a>
+<a href="5-deployment.html" style="text-decoration:none"><div class="metric-card"><h3>🚀 Deployment</h3><p>Containerisation, hosting, eval, prompt optimization</p></div></a>
+<a href="6-third-party.html" style="text-decoration:none"><div class="metric-card"><h3>🔗 3rd Party</h3><p>Snowflake, BlueYonder, Fabric FabricIQ</p></div></a>
+<a href="7-cross-model.html" style="text-decoration:none"><div class="metric-card"><h3>🔄 Cross-Model</h3><p>MAF with Gemini, ADK with Azure OpenAI/Foundry</p></div></a>
+<a href="8-foundry-vs-vertex.html" style="text-decoration:none"><div class="metric-card"><h3>☁️ Foundry vs Vertex</h3><p>Platform comparison</p></div></a>
+</div>
+
+<div class="footer">
+    Built for Show &amp; Tell — Microsoft Agent Framework v2 Responses API — March 2026
+</div>
+</main>
+</body>
+</html>

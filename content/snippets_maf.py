@@ -1,18 +1,20 @@
-"""Microsoft Agent Framework code snippets — Foundry v2 Responses API baseline."""
+"""Microsoft Agent Framework code snippets — based on official repo (github.com/microsoft/agent-framework)."""
+
+import os
 
 # ─────────────────────────────────────────────
 # Section 1: Agent Creation
 # ─────────────────────────────────────────────
 
 AGENT_CREATION_BASIC = '''\
+import asyncio
 from agent_framework.azure import AzureOpenAIResponsesClient
 from azure.identity import AzureCliCredential
-import asyncio
 
 async def main():
-    # Create agent using the new agent-framework package
+    # Provider-leading client → .as_agent() pattern
     agent = AzureOpenAIResponsesClient(
-        endpoint=os.environ.get("AZURE_OPENAI_ENDPOINT"),
+        # endpoint / deployment_name / api_version from env vars
         credential=AzureCliCredential(),
     ).as_agent(
         name="supply-chain-assistant",
@@ -45,35 +47,43 @@ tools:
 '''
 
 AGENT_RESPONSES_API = '''\
-# Invoke via OpenAI Responses API v2
-openai_client = project.get_openai_client()
-
-response = openai_client.responses.create(
-    model=os.environ["MODEL_DEPLOYMENT_NAME"],
-    input="What is our current inventory for SKU-4521?",
-    extra_body={
-        "agent": {
-            "name": "supply-chain-assistant",
-            "type": "agent_reference",
-        }
-    },
+# Invoke via OpenAI Responses protocol
+# Agent Framework wraps this behind agent.run()
+agent = AzureOpenAIResponsesClient(
+    credential=AzureCliCredential(),
+).as_agent(
+    name="supply-chain-assistant",
+    instructions="Answer supply chain questions.",
 )
 
+# Simple invocation
+result = await agent.run("What is our current inventory for SKU-4521?")
+print(result)
+
+# Or use the underlying OpenAI client directly
+from openai import AzureOpenAI
+client = AzureOpenAI(azure_ad_token_provider=...)
+response = client.responses.create(
+    model="gpt-4o",
+    input="What is our current inventory for SKU-4521?",
+)
 print(response.output_text)
 '''
 
 AGENT_STREAMING = '''\
-# Streaming with Responses API v2
-stream = openai_client.responses.create(
-    model=os.environ["MODEL_DEPLOYMENT_NAME"],
+# Streaming with OpenAI Responses protocol
+from openai import AzureOpenAI
+
+client = AzureOpenAI(
+    azure_endpoint=os.environ["AZURE_OPENAI_ENDPOINT"],
+    azure_ad_token_provider=token_provider,
+    api_version="2025-03-01-preview",
+)
+
+stream = client.responses.create(
+    model="gpt-4o",
     input="Show me the top 5 delayed shipments",
     stream=True,
-    extra_body={
-        "agent": {
-            "name": "supply-chain-assistant",
-            "type": "agent_reference",
-        }
-    },
 )
 
 for event in stream:
@@ -90,38 +100,37 @@ for event in stream:
 # ─────────────────────────────────────────────
 
 TOOLS_FUNCTION = '''\
-from azure.ai.agents.models import FunctionTool
-
 def query_snowflake(query: str, warehouse: str = "COMPUTE_WH") -> str:
     """Execute a read-only query against Snowflake data warehouse."""
-    # Actual Snowflake connector call here
     return f"Results for: {query}"
 
 def check_order_status(order_id: str) -> str:
     """Check BlueYonder order fulfillment status."""
     return f"Order {order_id}: In Transit, ETA 2 days"
 
-agent = project.agents.create_agent(
-    model=os.environ["MODEL_DEPLOYMENT_NAME"],
+# Agent Framework auto-wraps functions as tools
+agent = AzureOpenAIResponsesClient(
+    credential=AzureCliCredential(),
+).as_agent(
     name="multi-tool-agent",
     instructions="Use tools to answer supply chain questions.",
-    tools=FunctionTool([query_snowflake, check_order_status]),
+    tools=[query_snowflake, check_order_status],
 )
 '''
 
 TOOLS_AI_SEARCH = '''\
-from azure.ai.agents.models import AzureAISearchToolDefinition
+from agent_framework.azure_ai_search import AzureAISearchTool
 
-# Built-in Azure AI Search — RAG with vector search
-search_tool = AzureAISearchToolDefinition(
-    index_connection_id="your-ai-search-connection",
+# Built-in Azure AI Search — RAG with vector/semantic/hybrid
+search_tool = AzureAISearchTool(
     index_name="product-catalog",
-    query_type="vector_semantic_hybrid",
-    top_k=5,
+    search_endpoint=os.environ["AZURE_SEARCH_ENDPOINT"],
+    credential=AzureCliCredential(),
 )
 
-agent = project.agents.create_agent(
-    model=os.environ["MODEL_DEPLOYMENT_NAME"],
+agent = AzureOpenAIResponsesClient(
+    credential=AzureCliCredential(),
+).as_agent(
     name="rag-agent",
     instructions="Search the product catalog to answer questions.",
     tools=[search_tool],
@@ -129,41 +138,38 @@ agent = project.agents.create_agent(
 '''
 
 TOOLS_BUILTIN = '''\
-from azure.ai.agents.models import (
-    WebSearchPreviewToolDefinition,
-    CodeInterpreterToolDefinition,
-    BingGroundingToolDefinition,
-    ToolSet,
-)
+# Built-in tools provided by Agent Framework
+# Available via the OpenAI Responses tool types:
 
-# Compose multiple built-in tools
-toolset = ToolSet()
-toolset.definitions.append(WebSearchPreviewToolDefinition())   # Free web search
-toolset.definitions.append(CodeInterpreterToolDefinition())    # Sandbox Python
-toolset.definitions.append(BingGroundingToolDefinition(        # Enterprise Bing
-    bing_connection_id="your-bing-connection",
-))
-
-agent = project.agents.create_agent(
-    model=os.environ["MODEL_DEPLOYMENT_NAME"],
+agent = AzureOpenAIResponsesClient(
+    credential=AzureCliCredential(),
+).as_agent(
     name="analyst-agent",
     instructions="Use web search and code interpreter to analyze data.",
-    toolset=toolset,
+    tools=[
+        {"type": "web_search_preview"},       # Free web search
+        {"type": "code_interpreter"},          # Sandbox Python
+        search_tool,                            # Azure AI Search
+    ],
 )
+
+# Also available:
+# - Bing Grounding (enterprise web search with citations)
+# - File Search (vector-store-backed document search)
 '''
 
 TOOLS_MCP = '''\
-from azure.ai.agents.models import McpToolDefinition
+from agent_framework.core.tools import McpTool
 
 # Connect to ANY external service via MCP
-snowflake_mcp = McpToolDefinition(
-    server_label="snowflake-mcp",
+snowflake_mcp = McpTool(
     server_url="https://snowflake-mcp-server.azurewebsites.net/sse",
     allowed_tools=["execute_query", "list_tables", "describe_table"],
 )
 
-agent = project.agents.create_agent(
-    model=os.environ["MODEL_DEPLOYMENT_NAME"],
+agent = AzureOpenAIResponsesClient(
+    credential=AzureCliCredential(),
+).as_agent(
     name="mcp-agent",
     instructions="Use the Snowflake MCP server to query data.",
     tools=[snowflake_mcp],
@@ -175,32 +181,30 @@ agent = project.agents.create_agent(
 # ─────────────────────────────────────────────
 
 MEMORY_THREAD = '''\
-# Thread-based conversation persistence (Cosmos DB-backed)
-thread = project.agents.threads.create()
+# Conversation persistence via session stores
+from agent_framework.azure_cosmos import CosmosSessionStore
 
-# Add user message
-project.agents.messages.create(
-    thread_id=thread.id,
-    role="user",
-    content="What were my last 3 orders?",
-)
-
-# Run agent on thread — full conversation history preserved
-run = project.agents.runs.create_and_process(
-    thread_id=thread.id,
-    agent_id=agent.id,
+# Create a Cosmos DB-backed session store
+store = CosmosSessionStore(
+    endpoint=os.environ["COSMOS_ENDPOINT"],
+    credential=DefaultAzureCredential(),
+    database_name="agent_memory",
+    container_name="sessions",
 )
 
-# Continue conversation in same thread
-project.agents.messages.create(
-    thread_id=thread.id,
-    role="user",
-    content="Cancel the most recent one",
+agent = AzureOpenAIResponsesClient(
+    credential=AzureCliCredential(),
+).as_agent(
+    name="supply-chain-assistant",
+    instructions="Help with supply chain queries.",
+    session_store=store,  # Auto-persists conversations
 )
-run = project.agents.runs.create_and_process(
-    thread_id=thread.id,
-    agent_id=agent.id,
-)
+
+# First turn — history auto-saved
+result = await agent.run("What were my last 3 orders?")
+
+# Continue conversation — full history preserved
+result = await agent.run("Cancel the most recent one")
 '''
 
 MEMORY_LONG_TERM = '''\
@@ -243,12 +247,11 @@ mem0_store = Mem0MemoryStore(
 # ─────────────────────────────────────────────
 
 MULTI_AGENT_GRAPH = '''\
-from agent_framework import AgentWorkflow
+from agent_framework.orchestrations import AgentWorkflow
 
-# Graph-based orchestration with streaming,
+# Graph-based workflow with streaming,
 # checkpointing, human-in-the-loop, and time-travel
 
-# Define the workflow graph
 workflow = AgentWorkflow()
 
 # Add agent nodes — each is a specialized agent
@@ -257,7 +260,7 @@ workflow.add_node("data_analyst", data_agent)
 workflow.add_node("fulfillment", fulfillment_agent)
 workflow.add_node("summarizer", summarizer_agent)
 
-# Deterministic routing with conditions
+# Deterministic routing with conditional edges
 workflow.add_edge("supervisor", "data_analyst", condition="data_query")
 workflow.add_edge("supervisor", "fulfillment", condition="order_mgmt")
 workflow.add_edge("data_analyst", "supervisor")  # Report back
@@ -267,7 +270,7 @@ workflow.add_edge("fulfillment", "supervisor")
 result = await workflow.run(
     "Show delayed orders and reschedule them",
     stream=True,
-    checkpoint=True,  # Enable time-travel debugging
+    checkpoint=True,  # Enables time-travel debugging
 )
 '''
 
@@ -337,42 +340,44 @@ DEPLOY_FOUNDRY = '''\
 az acr build --registry myregistry \\
     --image supply-chain-agent:1.2.0 .
 
-# Create hosted agent in Foundry
-az ai foundry agent create \\
-    --name supply-chain-assistant \\
+# Deploy via Azure Container Apps or AKS
+az containerapp create \\
+    --name supply-chain-agent \\
+    --resource-group mygroup \\
     --image myregistry.azurecr.io/supply-chain-agent:1.2.0 \\
-    --project-endpoint $FOUNDRY_PROJECT_ENDPOINT
+    --target-port 8088
 
-# Production features automatic:
-# ✅ Managed Identity (no API keys)
+# Production features:
+# ✅ Managed Identity (no API keys via DefaultAzureCredential)
 # ✅ RBAC access control
-# ✅ Application Insights tracing
+# ✅ Application Insights + OpenTelemetry tracing
 # ✅ Auto-scaling
 # ✅ Private networking support
 '''
 
 DEPLOY_EVAL = '''\
-# Built-in evaluation framework
-from azure.ai.projects import AIProjectClient
+# Evaluation via Azure AI Foundry
+# Supports quality metrics and prompt optimization
 
-# Batch evaluation with quality metrics
-eval_run = project.evaluations.create(
-    agent_id=agent.id,
-    dataset="supply-chain-test-cases",
-    evaluators=[
-        "intent_resolution",
-        "task_adherence",
-        "tool_call_accuracy",
-        "groundedness",
-    ],
-)
+# Use Foundry evaluations SDK or Azure AI CLI:
+# az ai foundry evaluation create \\
+#     --agent-name supply-chain-assistant \\
+#     --dataset supply-chain-test-cases \\
+#     --evaluators intent task groundedness
 
-# Prompt optimization from traces
-optimization = project.prompt_optimizer.create(
-    agent_id=agent.id,
-    dataset_from_traces=True,  # Harvest real production data
-    objective="Improve tool call accuracy for Snowflake queries",
-)
+# Built-in evaluators include:
+# ✅ Intent resolution
+# ✅ Task adherence
+# ✅ Tool call accuracy
+# ✅ Groundedness (citation checking)
+
+# Prompt optimization from production traces
+# Foundry can harvest traces from Application Insights
+# and optimize instructions automatically.
+
+# AF Labs provides experimental benchmarking and
+# reinforcement learning packages:
+# https://github.com/microsoft/agent-framework/tree/main/python/packages/lab
 '''
 
 # ─────────────────────────────────────────────
@@ -383,8 +388,7 @@ INTEGRATION_SNOWFLAKE = '''\
 from azure.ai.agents.models import McpToolDefinition, FunctionTool
 
 # Option 1: MCP Server for Snowflake
-snowflake_mcp = McpToolDefinition(
-    server_label="snowflake-mcp",
+snowflake_mcp = McpTool(
     server_url="https://snowflake-mcp.azurewebsites.net/sse",
     allowed_tools=["execute_query", "list_tables"],
     # Managed Identity — no credentials in code
@@ -409,10 +413,11 @@ def query_inventory(sku: str) -> str:
     conn.close()
     return str([{"warehouse": r[0], "qty": r[1]} for r in rows])
 
-agent = project.agents.create_agent(
-    model=os.environ["MODEL_DEPLOYMENT_NAME"],
+agent = AzureOpenAIResponsesClient(
+    credential=AzureCliCredential(),
+).as_agent(
     name="snowflake-agent",
-    tools=[snowflake_mcp, FunctionTool([query_inventory])],
+    tools=[snowflake_mcp, query_inventory],
     instructions="Query Snowflake for supply chain data.",
 )
 '''
@@ -442,10 +447,11 @@ def reschedule_delivery(order_id: str, new_date: str) -> str:
     resp.raise_for_status()
     return f"Order {order_id} rescheduled to {new_date}"
 
-agent = project.agents.create_agent(
-    model=os.environ["MODEL_DEPLOYMENT_NAME"],
+agent = AzureOpenAIResponsesClient(
+    credential=AzureCliCredential(),
+).as_agent(
     name="fulfillment-agent",
-    tools=FunctionTool([get_order_status, reschedule_delivery]),
+    tools=[get_order_status, reschedule_delivery],
     instructions="Manage orders via BlueYonder fulfillment.",
 )
 '''
@@ -481,10 +487,11 @@ def get_workforce_metrics(region: str, date: str) -> str:
     resp.raise_for_status()
     return resp.json()
 
-agent = project.agents.create_agent(
-    model=os.environ["MODEL_DEPLOYMENT_NAME"],
+agent = AzureOpenAIResponsesClient(
+    credential=AzureCliCredential(),
+).as_agent(
     name="fabric-intelligence-agent",
-    tools=[fabric_search, FunctionTool([get_workforce_metrics])],
+    tools=[fabric_search, get_workforce_metrics],
     instructions="""You are a Fabric intelligence agent.
     Use Azure AI Search for FabricIQ lakehouse queries.
     Use WorkIQ API for workforce intelligence metrics.

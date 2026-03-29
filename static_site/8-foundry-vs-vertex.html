@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Foundry vs Vertex AI — MAF vs ADK</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<nav class="sidebar">
+    <h3>🗂️ MAF vs ADK</h3>
+    <ul><li><a href="index.html">🤖 Home</a></li>
+<li><a href="0-what-is.html">📚 What Is MAF vs ADK</a></li>
+<li><a href="1-agent-creation.html">🏗️ Agent Creation</a></li>
+<li><a href="2-tool-integration.html">🔧 Tool Integration</a></li>
+<li><a href="3-memory-state.html">🧠 Memory & State</a></li>
+<li><a href="4-multi-agent.html">🔀 Multi-Agent</a></li>
+<li><a href="5-deployment.html">🚀 Deployment</a></li>
+<li><a href="6-third-party.html">🔗 3rd Party</a></li>
+<li><a href="7-cross-model.html">🔄 Cross-Model</a></li>
+<li><a href="8-foundry-vs-vertex.html" class="active">☁️ Foundry vs Vertex</a></li>
+</ul>
+    <div class="sidebar-meta">
+        <p><strong>Baseline:</strong> MAF v2 Responses API</p>
+        <p><strong>Compared with:</strong> Google ADK</p>
+        <p style="margin-top:1rem;">March 2026</p>
+    </div>
+</nav>
+<div class="mobile-nav">
+    <select onchange="location.href=this.value">
+        <option value="index.html">🤖 Home</option>
+<option value="0-what-is.html">📚 What Is MAF vs ADK</option>
+<option value="1-agent-creation.html">🏗️ Agent Creation</option>
+<option value="2-tool-integration.html">🔧 Tool Integration</option>
+<option value="3-memory-state.html">🧠 Memory & State</option>
+<option value="4-multi-agent.html">🔀 Multi-Agent</option>
+<option value="5-deployment.html">🚀 Deployment</option>
+<option value="6-third-party.html">🔗 3rd Party</option>
+<option value="7-cross-model.html">🔄 Cross-Model</option>
+<option value="8-foundry-vs-vertex.html" selected>☁️ Foundry vs Vertex</option>
+
+    </select>
+</div>
+<main class="main-content">
+
+<h1 class="section-header">☁️ Microsoft Foundry vs Google Vertex AI</h1>
+<p>Both platforms are <strong>unified AI development platforms</strong> from their respective clouds.</p>
+<hr>
+
+<div class="columns">
+<div class="maf-col">
+    <h3 style="color:#4A90D9;">Microsoft Foundry</h3>
+    <p><em>Formerly: Azure AI Studio → Azure AI Foundry → Microsoft Foundry</em></p>
+    <p>A unified <strong>Azure PaaS</strong> for enterprise AI operations, model deployment, agent building, and application development.</p>
+    <ul>
+    <li><strong>Portal:</strong> <a href="https://ai.azure.com" target="_blank">ai.azure.com</a></li>
+    <li><strong>Cloud:</strong> Microsoft Azure</li>
+    <li><strong>Agent API:</strong> OpenAI Responses protocol</li>
+    <li><strong>SDKs:</strong> Python, C#, TypeScript (preview), Java (preview)</li>
+    <li><strong>Agent Framework:</strong> Microsoft Agent Framework (MAF)</li>
+    </ul>
+</div>
+<div class="adk-col">
+    <h3 style="color:#34A853;">Google Vertex AI</h3>
+    <p><em>Includes: Vertex AI Studio, Agent Builder, Agent Engine</em></p>
+    <p>A unified, open <strong>Google Cloud platform</strong> for building, deploying, and scaling generative AI and ML models.</p>
+    <ul>
+    <li><strong>Portal:</strong> <a href="https://console.cloud.google.com/vertex-ai" target="_blank">console.cloud.google.com/vertex-ai</a></li>
+    <li><strong>Cloud:</strong> Google Cloud Platform</li>
+    <li><strong>Model Access:</strong> Model Garden (200+ models)</li>
+    <li><strong>SDKs:</strong> Python, Node.js, Go, Java</li>
+    <li><strong>Agent Framework:</strong> Agent Development Kit (ADK)</li>
+    </ul>
+</div>
+</div>
+<hr>
+
+<h3>📊 Key Capabilities Comparison</h3>
+<table><thead><tr><th>Capability</th><th>Microsoft Foundry</th><th>Google Vertex AI</th></tr></thead><tbody><tr><td>Platform Type</td><td>Unified Azure PaaS for AI</td><td>Unified Google Cloud AI platform</td></tr>
+<tr><td>Primary Models</td><td>GPT-4o, GPT-4.1, o3, o4-mini</td><td>Gemini 3 Pro, Gemini 3 Flash, Gemini 2.5</td></tr>
+<tr><td>Model Catalog</td><td>Foundry Model Garden (OpenAI, Anthropic, Gemini, Llama)</td><td>Model Garden (200+ models)</td></tr>
+<tr><td>Agent Building</td><td>MAF SDK + Foundry Agents (server-side)</td><td>ADK + Agent Builder + Agent Engine</td></tr>
+<tr><td>Agent Deployment</td><td>Azure Functions, Container Apps, AKS, Foundry Agent Service</td><td>Agent Engine (serverless), Cloud Run, GKE</td></tr>
+<tr><td>Agent API</td><td>OpenAI Responses protocol</td><td>Gemini API (generateContent, streamGenerateContent)</td></tr>
+<tr><td>Tools / Integrations</td><td>1,400+ tools via tool catalog + MCP + A2A</td><td>Google Search, Vertex AI Search, code execution, OpenAPI tools</td></tr>
+<tr><td>Memory / State</td><td>Thread-based + Cosmos DB + Redis + Mem0</td><td>Session service + state + memory + artifacts</td></tr>
+<tr><td>Model Fine-Tuning</td><td>SFT via Azure OpenAI + custom training</td><td>SFT, PEFT, RLHF via Vertex AI Training</td></tr>
+<tr><td>Model Evaluation</td><td>Intent, Task Completion, Groundedness evals</td><td>Gen AI Evaluation Service + ADK Eval</td></tr>
+<tr><td>Responsible AI</td><td>Content Safety, Prompt Shields, Groundedness</td><td>Model Armor, safety filters</td></tr>
+<tr><td>MLOps / Pipelines</td><td>Azure ML Pipelines (separate)</td><td>Vertex AI Pipelines (native, Kubeflow-based)</td></tr>
+<tr><td>Notebooks</td><td>VS Code, Foundry extension</td><td>Colab Enterprise, Vertex AI Workbench</td></tr>
+<tr><td>Search / RAG</td><td>Azure AI Search, Foundry IQ</td><td>Vertex AI Search Grounding, Google Search</td></tr>
+<tr><td>Dev Portal</td><td>Foundry Portal (ai.azure.com)</td><td>Vertex AI Studio (console.cloud.google.com)</td></tr>
+<tr><td>Observability</td><td>Application Insights, Azure Monitor</td><td>Cloud Logging, Cloud Monitoring, Cloud Trace</td></tr>
+<tr><td>Identity &amp; Auth</td><td>Azure AD / Entra ID, Managed Identity, RBAC</td><td>GCP IAM, Workload Identity, service accounts</td></tr>
+<tr><td>Enterprise Governance</td><td>Azure Policy, RBAC, network isolation</td><td>Org policies, VPC-SC, audit logs</td></tr>
+<tr><td>Pricing Model</td><td>Pay-per-token/call, platform free</td><td>Pay-per-token/call, varied by model</td></tr>
+</tbody></table>
+<hr>
+
+<h3>🏗️ Architecture Layers</h3>
+<div class="columns">
+<div>
+    <p><strong>Microsoft Foundry Architecture</strong></p>
+    <pre><code class="language-text">┌─────────────────────────────────┐
+│   Foundry Portal (ai.azure.com) │
+├─────────────────────────────────┤
+│  Agent Service (Responses API)  │
+│  • Agents v2 (MAF-powered)     │
+│  • Tool Catalog (1400+)        │
+│  • Foundry IQ Knowledge        │
+│  • Memory &amp; State              │
+├─────────────────────────────────┤
+│  Foundry Models                 │
+│  • OpenAI (GPT-4o, o3, o4)     │
+│  • Anthropic (Claude)           │
+│  • Google (Gemini)              │
+│  • Meta (Llama), Mistral ...    │
+├─────────────────────────────────┤
+│  Foundry Tools                  │
+│  • AI Search  • Content Safety  │
+│  • Speech     • Vision          │
+├─────────────────────────────────┤
+│  Azure Infrastructure           │
+│  • Entra ID  • Managed Identity │
+│  • VNet      • Private Endpoints│
+│  • Azure Policy • Monitor       │
+└─────────────────────────────────┘</code></pre>
+</div>
+<div>
+    <p><strong>Vertex AI Architecture</strong></p>
+    <pre><code class="language-text">┌─────────────────────────────────┐
+│   Vertex AI Studio (Console)    │
+├─────────────────────────────────┤
+│  Agent Builder &amp; Agent Engine   │
+│  • ADK-powered Agents           │
+│  • Tools &amp; Grounding            │
+│  • Sessions &amp; Memory            │
+│  • A2A Protocol                 │
+├─────────────────────────────────┤
+│  Model Garden (200+ models)     │
+│  • Google (Gemini 3, Imagen)    │
+│  • Anthropic (Claude)           │
+│  • Meta (Llama), Mistral ...    │
+├─────────────────────────────────┤
+│  Vertex AI Tools                │
+│  • Search  • Eval  • Pipelines  │
+│  • Training  • Feature Store    │
+│  • Notebooks  • Experiments     │
+├─────────────────────────────────┤
+│  GCP Infrastructure             │
+│  • IAM      • Workload Identity │
+│  • VPC-SC   • Private Google    │
+│  • Org Policy • Cloud Audit     │
+└─────────────────────────────────┘</code></pre>
+</div>
+</div>
+<hr>
+
+<h3>📅 Platform Evolution</h3>
+<div class="columns">
+<div class="maf-col">
+    <h4>Microsoft Foundry Evolution</h4>
+    <ol>
+    <li><strong>Azure AI Studio</strong> — Original portal for Azure AI services</li>
+    <li><strong>Azure AI Foundry</strong> — Consolidated hub + Azure OpenAI + AI Services</li>
+    <li><strong>Microsoft Foundry</strong> — Current: unified PaaS, single resource model, OpenAI Responses</li>
+    </ol>
+    <p><strong>Key shift:</strong> From multiple packages and endpoints to a single unified project client.</p>
+</div>
+<div class="adk-col">
+    <h4>Vertex AI Evolution</h4>
+    <ol>
+    <li><strong>Cloud AI Platform</strong> — Original ML training &amp; prediction</li>
+    <li><strong>Vertex AI</strong> — Unified ML + Gen AI platform with Model Garden</li>
+    <li><strong>Vertex AI + Agent Builder</strong> — Current: ADK integration, Agent Engine, Gemini 3</li>
+    </ol>
+    <p><strong>Key shift:</strong> From ML-focused platform to full-stack generative AI and agentic development.</p>
+</div>
+</div>
+<hr>
+
+<h3>🎯 When to Choose Which</h3>
+<div class="columns">
+<div class="maf-col">
+    <h4>Choose Microsoft Foundry when:</h4>
+    <ul>
+    <li>Your organization is on <strong>Azure / M365</strong></li>
+    <li>You need <strong>Managed Identity</strong> (Entra ID)</li>
+    <li>You want <strong>GPT-4o / o3 / o4-mini</strong> as primary models</li>
+    <li>You need <strong>Fabric / FabricIQ / WorkIQ</strong></li>
+    <li>You require <strong>Azure Policy</strong> governance</li>
+    <li>You want the <strong>OpenAI Responses protocol</strong></li>
+    <li>Your team uses <strong>.NET / C#</strong></li>
+    <li>You need <strong>1,400+ enterprise tools</strong></li>
+    </ul>
+</div>
+<div class="adk-col">
+    <h4>Choose Vertex AI when:</h4>
+    <ul>
+    <li>Your organization is on <strong>Google Cloud (GCP)</strong></li>
+    <li>You want <strong>Gemini 3</strong> as the primary model</li>
+    <li>You need <strong>BigQuery</strong> native integration</li>
+    <li>You want <strong>Agent Engine</strong> for serverless deployment</li>
+    <li>You need <strong>200+ models</strong> from Model Garden</li>
+    <li>You want <strong>multi-language SDKs</strong> (Python, TS, Go, Java)</li>
+    <li>You need <strong>Kubeflow-based pipelines</strong></li>
+    <li>You want <strong>Colab Enterprise</strong></li>
+    </ul>
+</div>
+</div>
+<hr>
+
+<h3>🔗 Cross-Platform Interoperability</h3>
+<p>Both platforms are <strong>not mutually exclusive</strong>. Modern agent architectures can span both clouds.</p>
+<table><thead><tr><th>Integration Point</th><th>How It Works</th></tr></thead><tbody><tr><td><strong>A2A Protocol</strong></td><td>Both MAF and ADK support A2A — agents on Azure can call agents on GCP</td></tr>
+<tr><td><strong>MCP Servers</strong></td><td>Both frameworks consume MCP tool servers — host on either cloud</td></tr>
+<tr><td><strong>Foundry models in ADK</strong></td><td>ADK uses LiteLLM to call Azure OpenAI / Foundry endpoints</td></tr>
+<tr><td><strong>Gemini in MAF</strong></td><td>MAF uses Foundry Model Garden or OpenAI-compatible Gemini endpoint</td></tr>
+<tr><td><strong>OpenAI compatibility</strong></td><td>Both Foundry and Vertex AI expose OpenAI-compatible APIs</td></tr>
+</tbody></table>
+<div class="info-box">💡 <strong>See page 7 (Cross-Model Usage)</strong> for implementation code showing how to use MAF with Gemini and ADK with Azure OpenAI.</div>
+
+<div class="footer">
+    Built for Show &amp; Tell — Microsoft Agent Framework v2 Responses API — March 2026
+</div>
+</main>
+</body>
+</html>

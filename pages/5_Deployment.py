@@ -86,9 +86,9 @@ render_comparison(
         "ADK has **built-in evaluation** with:\n\n"
         "- **Eval criteria** for response quality and tool trajectories\n"
         "- **User simulation** for multi-turn testing\n"
-        "- **CLI support**: `adk eval` and Dev UI evaluation tab\n\n"
-        "⚠️ No prompt optimization from production traces\n"
-        "⚠️ No dataset harvesting from live traffic"
+        "- **CLI support**: `adk eval` and Dev UI evaluation tab\n"
+        "- **Optimization**: Prompt optimization via ADK Optimization docs\n"
+        "- **Custom metrics**: Define your own eval metrics"
     ),
     adk_code=adk.DEPLOY_NO_EVAL,
 )
@@ -123,16 +123,16 @@ prod_features = {
         "✅ Version-based",
     ],
     "ADK + GCP": [
-        "⚠️ Manual IAM setup",
-        "⚠️ Manual IAM config",
-        "⚠️ Cloud Logging/Monitoring",
+        "✅ GCP IAM / Workload Identity",
+        "✅ GCP IAM policies",
+        "✅ Cloud Logging / Monitoring",
         "✅ Vertex AI / Cloud Run",
-        "⚠️ VPC config",
+        "✅ VPC-SC support",
         "✅ Eval criteria + user sim",
-        "❌ Build manually",
-        "❌ Build manually",
-        "⚠️ Agent Config (basic)",
-        "⚠️ Cloud Run revisions",
+        "✅ ADK Optimization docs",
+        "⚠️ Manual setup",
+        "✅ Agent Config",
+        "✅ Cloud Run revisions",
     ],
 }
 

@@ -1,4 +1,4 @@
-"""Live MAF chat demo using Foundry v2 Responses API with streaming."""
+"""Live MAF chat demo using OpenAI Responses protocol with streaming."""
 
 import streamlit as st
 
@@ -9,7 +9,7 @@ def render_live_demo():
 
     st.markdown("### 🎯 Live Demo — MAF Conversational Agent")
     st.markdown(
-        "Experience the **Responses API v2** streaming in action. "
+        "Experience the **OpenAI Responses** streaming in action. "
         "This agent can answer supply-chain questions using function tools."
     )
 
@@ -81,12 +81,12 @@ def _render_mock_demo():
         with st.chat_message("assistant"):
             st.markdown(
                 "⚠️ **Mock mode** — configure `.env` with your Foundry endpoint "
-                "to get real agent responses via the Responses API v2."
+                "to get real agent responses via the OpenAI Responses protocol."
             )
 
 
 def _render_live_chat():
-    """Render live chat connected to Foundry Responses API v2."""
+    """Render live chat connected to Foundry OpenAI Responses protocol."""
     from azure.identity import DefaultAzureCredential
     from azure.ai.projects import AIProjectClient
     from live_demo.config import FOUNDRY_ENDPOINT, MODEL_DEPLOYMENT, AGENT_NAME

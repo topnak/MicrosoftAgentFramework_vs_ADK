@@ -52,7 +52,7 @@ with col_a1:
         '''from azure.identity import DefaultAzureCredential
 from agent_framework.foundry import FoundryChatClient, FoundryAgent
 
-# Deploy "gemini-2.0-flash" in Foundry Model Garden first
+# Deploy "gemini-2.5-flash" in Foundry Model Garden first
 client = FoundryChatClient(
     project_endpoint="https://ai-foundry-<resource>.services.ai.azure.com/",
     credential=DefaultAzureCredential(),
@@ -60,7 +60,7 @@ client = FoundryChatClient(
 
 agent = FoundryAgent(
     client=client,
-    model="gemini-2.0-flash",  # Foundry deployment name
+    model="gemini-2.5-flash",  # Foundry deployment name
     instructions="You are a helpful assistant powered by Gemini on Azure.",
 )
 
@@ -105,7 +105,7 @@ client = OpenAI(
 )
 
 agent = OpenAIChatCompletionClient(client=client).as_agent(
-    model="gemini-2.0-flash",
+    model="gemini-2.5-flash",
     instructions="You are a helpful assistant powered by Gemini.",
 )
 

@@ -59,19 +59,19 @@
 ┌─────────────────────────────────────────────────────────────────┐
 │                    Google Cloud Platform                         │
 ├──────────────┬──────────────┬───────────────────────────────────┤
-│  Cloud Run   │  Vertex AI   │  (No built-in eval/optimization)  │
+│  Cloud Run   │  Vertex AI   │  ADK Eval + Optimization          │
 ├──────────────┴──────────────┴───────────────────────────────────┤
 │                                                                 │
 │  ┌──────────────────────────────────────────────────────────┐   │
-│  │             Google ADK SDK (Python only)                 │   │
+│  │             Google ADK SDK (Python, TS, Go, Java)          │   │
 │  │  ┌────────────┐ ┌──────────┐ ┌────────────┐             │   │
 │  │  │   Agent    │ │  Tools   │ │  Session   │             │   │
 │  │  │  Class     │ │  List    │ │  Service   │             │   │
 │  │  └─────┬──────┘ └────┬─────┘ └─────┬──────┘             │   │
 │  │        │              │             │                     │   │
 │  │  ┌─────┴──────────────┴─────────────┴──────┐             │   │
-│  │  │    Fixed Pattern Orchestrators          │             │   │
-│  │  │  (Sequential, Parallel, Loop)           │             │   │
+│  │  │    Built-in + ADK 2.0 Graph Orchestrators   │             │   │
+│  │  │  (Sequential, Parallel, Loop, Graph)      │             │   │
 │  │  └─────────────────────────────────────────┘             │   │
 │  └──────────────────────────────────────────────────────────┘   │
 │                                                                 │
@@ -158,11 +158,11 @@ Client Request
 | **Configure** | Model deployment, tools, memory — all in `agent.yaml` | Constructor kwargs in Python |
 | **Test locally** | `agentdev` CLI + Agent Inspector UI | `adk web` dev server |
 | **Containerize** | Standard Dockerfile + hosting adapter (port 8088) | Manual Dockerfile + custom server |
-| **Deploy** | `az ai foundry agent create` → managed hosting | `gcloud run deploy` → manual config |
-| **Monitor** | Application Insights (automatic) | Cloud Monitoring (manual setup) |
-| **Evaluate** | Built-in evaluators (intent, task, groundedness, tool accuracy) | Manual test scripts |
-| **Optimize** | Prompt optimizer from production traces | Manual prompt iteration |
-| **Version** | `agent.yaml` version field + Foundry versioning | Git only (no agent versioning) |
+| **Deploy** | `az ai foundry agent create` → managed hosting | `gcloud run deploy` → Cloud Run |
+| **Monitor** | Application Insights (automatic) | Cloud Monitoring + Cloud Logging |
+| **Evaluate** | Built-in evaluators (intent, task, groundedness, tool accuracy) | Built-in evaluation framework + custom metrics |
+| **Optimize** | Prompt optimizer from production traces | ADK Optimization (prompt optimization docs) |
+| **Version** | `agent.yaml` version field + Foundry versioning | Agent Config (JSON/YAML) + Git |
 | **Scale** | Foundry auto-scaling | Cloud Run auto-scaling (manual config) |
 
 ---
@@ -188,14 +188,11 @@ ToolSet (composable container)
 ```
 tools=[] (simple list)
 ├── Python functions             — Custom function tools
-├── google_search                — Google Search (only built-in)
+├── google_search                — Google Search Grounding
+├── built_in_code_execution      — Code execution via Gemini
+├── vertex_ai_search_tool        — Vertex AI Search Grounding
 ├── MCPToolset.from_server()     — MCP server connection
-│   └── (manual cleanup required)
-└── (everything else: build manually)
-    ├── No RAG tool
-    ├── No code interpreter
-    ├── No file search
-    └── No enterprise search
+└── OpenAPI tools                — REST API integration
 ```
 
 ### Tool Count Comparison
@@ -203,12 +200,12 @@ tools=[] (simple list)
 | Tool Type | MAF | ADK |
 |-----------|-----|-----|
 | Function tools | ✅ | ✅ |
-| Web search | ✅ WebSearchPreview + Bing | ⚠️ Google Search only |
-| RAG / Vector search | ✅ Azure AI Search | ❌ Manual build |
-| Code interpreter | ✅ Sandboxed | ❌ Manual build |
-| File search | ✅ Vector store | ❌ Manual build |
-| MCP | ✅ Native with access control | ⚠️ MCPToolset (manual cleanup) |
-| **Total built-in** | **6+** | **1** |
+| Web search | ✅ WebSearchPreview + Bing | ✅ Google Search Grounding |
+| RAG / Vector search | ✅ Azure AI Search | ✅ Vertex AI Search Grounding |
+| Code interpreter | ✅ Sandboxed | ✅ BuiltInCodeExecutor |
+| File search | ✅ Vector store | ⚠️ Manual build |
+| MCP | ✅ Native with access control | ✅ MCPToolset |
+| **Total built-in** | **6+** | **4+** |
 
 ---
 
@@ -241,20 +238,23 @@ tools=[] (simple list)
 
 ```
 ┌────────────────────────────────────────────┐
-│ Layer 2: Session State                     │
-│ ├── Simple key-value dictionary            │
-│ └── Manual management only                 │
+│ Layer 3: Memory Service                    │
+│ ├── Cross-session recall                   │
+│ └── Memory-based context enrichment        │
+├────────────────────────────────────────────┤
+│ Layer 2: Session State + Context Mgmt      │
+│ ├── Key-value dictionary per session       │
+│ ├── output_key auto-save                   │
+│ ├── Context caching (reduce token costs)   │
+│ ├── Context compression (auto-summarize)   │
+│ └── Session rewind (time-travel)           │
 ├────────────────────────────────────────────┤
 │ Layer 1: Session Storage                   │
 │ ├── InMemorySessionService (default)       │
-│ │   └── ❌ Lost on restart                 │
-│ └── DatabaseSessionService (manual setup)  │
-│     └── SQLite / PostgreSQL (BYO)          │
+│ └── DatabaseSessionService (SQLite/PG)     │
 ├────────────────────────────────────────────┤
-│ (No higher layers — build from scratch)    │
-│ ❌ No summary memory                       │
-│ ❌ No user profile memory                  │
-│ ❌ No embedding-based retrieval            │
+│ Artifacts                                  │
+│ └── File/binary data management            │
 └────────────────────────────────────────────┘
 ```
 
@@ -279,19 +279,23 @@ Capabilities:
 Complexity: O(1) deployment — one container for entire workflow
 ```
 
-### ADK: Fixed Patterns
+### ADK: Built-in Patterns + ADK 2.0 Graph Workflows
 
 ```
 Capabilities:
 ├── SequentialAgent (A → B → C)
 ├── ParallelAgent (A + B + C → results list)
 ├── LoopAgent (repeat N times)
-└── A2A Protocol (for complex patterns)
+├── ADK 2.0 Graph Workflows
+│   ├── Conditional routing
+│   ├── Dynamic workflows
+│   ├── Human input integration
+│   └── Collaborative agents
+└── A2A Protocol (for cross-organization agents)
     ├── Each agent = separate HTTP server
-    ├── Manual message routing
-    └── External orchestration required
+    └── Cross-organization communication
 
-Complexity: O(N) deployments for N agents in complex patterns
+Complexity: O(1) for graph workflows, O(N) for A2A patterns
 ```
 
 ### Orchestration Pattern Support
@@ -300,12 +304,12 @@ Complexity: O(N) deployments for N agents in complex patterns
 |---------|-----|-----|
 | Sequential | ✅ Graph edge | ✅ SequentialAgent |
 | Parallel | ✅ Fan-out | ✅ ParallelAgent |
-| Parallel + Aggregate | ✅ Fan-in | ❌ Manual |
-| Conditional routing | ✅ Conditional edges | ❌ Manual |
+| Parallel + Aggregate | ✅ Fan-in | ✅ ADK 2.0 graph |
+| Conditional routing | ✅ Conditional edges | ✅ ADK 2.0 graph |
 | Loop with exit | ✅ Loop node | ✅ LoopAgent |
-| Human approval | ✅ Checkpoint | ❌ Manual |
-| Switch-case | ✅ Built-in | ❌ Manual |
-| Cross-process agents | ✅ Optional | ⚠️ Required (A2A) |
+| Human approval | ✅ Checkpoint | ✅ ADK 2.0 human input |
+| Switch-case | ✅ Built-in | ⚠️ Custom routing |
+| Cross-process agents | ✅ Optional | ✅ A2A protocol |
 
 ---
 
@@ -351,13 +355,13 @@ Developer Machine                    Google Cloud Platform
                                     │            │                │
                                     │  ┌─────────▼───────────┐    │
                                     │  │  Cloud Run           │    │
-                                    │  │  ├─ IAM (manual)     │    │
+                                    │  │  ├─ IAM (config)     │    │
                                     │  │  ├─ Scaling (config) │    │
-                                    │  │  ├─ Monitoring(sep)  │    │
+                                    │  │  ├─ Monitoring       │    │
                                     │  │  └─ Custom endpoint  │    │
                                     │  └─────────────────────┘    │
                                     │                             │
-                                    │  (No built-in eval/optim)  │
+                                    │  ADK Eval + Optimization    │
                                     └─────────────────────────────┘
 ```
 
@@ -390,27 +394,27 @@ Developer Machine                    Google Cloud Platform
 └──────────────────────────────────────────────┘
 ```
 
-### ADK: Manual Credential Management
+### ADK: GCP IAM + Workload Identity
 
 ```
 ┌──────────────────────────────────────────────┐
-│              GCP IAM (manual per service)     │
+│              GCP IAM + Workload Identity      │
 │  ┌─────────────────────────────────────────┐ │
-│  │         Environment Variables           │ │
-│  │  ├─ GOOGLE_API_KEY (Gemini)             │ │
-│  │  ├─ SNOWFLAKE_USER + PASSWORD           │ │
-│  │  ├─ BLUEYONDER_API_KEY                  │ │
-│  │  ├─ AZURE_CLIENT_ID + SECRET (Fabric)   │ │
-│  │  └─ DB_CONNECTION_STRING                │ │
+│  │         Application Default Credentials │ │
+│  │  ├─ Agent → Gemini API (model calls)    │ │
+│  │  ├─ Agent → BigQuery (data)             │ │
+│  │  ├─ Agent → Vertex AI (ML)              │ │
+│  │  ├─ Agent → Secret Manager (secrets)    │ │
+│  │  └─ Agent → Cloud Storage (artifacts)   │ │
 │  └─────────────────────────────────────────┘ │
 │  ┌─────────────────────────────────────────┐ │
 │  │         Service Accounts               │ │
-│  │  ├─ Manual IAM binding                  │ │
-│  │  ├─ Per-service key rotation            │ │
-│  │  └─ No unified identity plane           │ │
+│  │  ├─ Workload Identity Federation        │ │
+│  │  ├─ IAM role binding per service        │ │
+│  │  └─ Cross-cloud via federation          │ │
 │  └─────────────────────────────────────────┘ │
-│  API keys and secrets in env vars or files.  │
-│  Manual rotation for each service.           │
+│  GCP services: google.auth.default().        │
+│  Cross-cloud services: separate credentials. │
 └──────────────────────────────────────────────┘
 ```
 
@@ -494,11 +498,10 @@ User → runner.run_async(new_message=content)
           │
           ├──► Event with content.parts[].text
           ├──► Event with tool_call
-          └──► (no standard citation format)
+          └──► Gemini Live API streaming
 
-Events: Custom event types
-        Manual parsing required
-        No standard SSE protocol
+Events: Gemini API event types
+        Standard async iteration
 ```
 
 ---
@@ -508,13 +511,13 @@ Events: Custom event types
 | Factor | MAF Winner? | Why |
 |--------|-------------|-----|
 | Platform integration | ✅ | Azure AI Foundry is a complete agent platform |
-| Tool ecosystem | ✅ | 6+ built-in enterprise tools vs 1 |
-| Memory sophistication | ✅ | 4-layer memory stack vs 2-layer |
-| Orchestration flexibility | ✅ | Graph-based vs fixed patterns |
-| Security model | ✅ | Managed Identity vs manual credentials |
-| Multi-language | ✅ | Python + .NET vs Python only |
-| Eval & optimization | ✅ | Built-in vs manual |
-| API compatibility | ✅ | OpenAI Responses API vs proprietary |
+| Tool ecosystem | ✅ | 6+ built-in enterprise tools vs 4+ |
+| Memory sophistication | ✅ | More persistence backends; ADK has unique context features |
+| Orchestration flexibility | ✅ | More mature graph API; ADK 2.0 adds graph workflows |
+| Security model | ✅ | Managed Identity vs GCP IAM + Workload Identity |
+| Multi-language | ≈ | Python + .NET vs Python, TS, Go, Java |
+| Eval & optimization | ✅ | More turnkey evaluators; ADK has optimization + custom metrics |
+| API compatibility | ✅ | OpenAI Responses protocol vs Gemini API |
 | Rapid prototyping | ⚠️ | ADK has simpler setup for quick experiments |
 | GCP-native workloads | ⚠️ | ADK is better for pure GCP shops |
 | Gemini-first models | ⚠️ | ADK has native Gemini integration |

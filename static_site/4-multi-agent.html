@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multi-Agent — MAF vs ADK</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<nav class="sidebar">
+    <h3>🗂️ MAF vs ADK</h3>
+    <ul><li><a href="index.html">🤖 Home</a></li>
+<li><a href="0-what-is.html">📚 What Is MAF vs ADK</a></li>
+<li><a href="1-agent-creation.html">🏗️ Agent Creation</a></li>
+<li><a href="2-tool-integration.html">🔧 Tool Integration</a></li>
+<li><a href="3-memory-state.html">🧠 Memory & State</a></li>
+<li><a href="4-multi-agent.html" class="active">🔀 Multi-Agent</a></li>
+<li><a href="5-deployment.html">🚀 Deployment</a></li>
+<li><a href="6-third-party.html">🔗 3rd Party</a></li>
+<li><a href="7-cross-model.html">🔄 Cross-Model</a></li>
+<li><a href="8-foundry-vs-vertex.html">☁️ Foundry vs Vertex</a></li>
+</ul>
+    <div class="sidebar-meta">
+        <p><strong>Baseline:</strong> MAF v2 Responses API</p>
+        <p><strong>Compared with:</strong> Google ADK</p>
+        <p style="margin-top:1rem;">March 2026</p>
+    </div>
+</nav>
+<div class="mobile-nav">
+    <select onchange="location.href=this.value">
+        <option value="index.html">🤖 Home</option>
+<option value="0-what-is.html">📚 What Is MAF vs ADK</option>
+<option value="1-agent-creation.html">🏗️ Agent Creation</option>
+<option value="2-tool-integration.html">🔧 Tool Integration</option>
+<option value="3-memory-state.html">🧠 Memory & State</option>
+<option value="4-multi-agent.html" selected>🔀 Multi-Agent</option>
+<option value="5-deployment.html">🚀 Deployment</option>
+<option value="6-third-party.html">🔗 3rd Party</option>
+<option value="7-cross-model.html">🔄 Cross-Model</option>
+<option value="8-foundry-vs-vertex.html">☁️ Foundry vs Vertex</option>
+
+    </select>
+</div>
+<main class="main-content">
+
+<h1 class="section-header">🔀 Chapter 4: Multi-Agent Orchestration</h1>
+<p>Complex tasks require <strong>multiple specialized agents</strong> working together. The orchestration model determines how agents collaborate.</p>
+<hr>
+
+<h3>4.1 — Multi-Agent Patterns</h3><hr>
+<div class="columns">
+<div>
+    <span class="framework-label-maf">Microsoft Agent Framework</span>
+    <p><strong>Graph-based Workflows with Checkpointing</strong></p>
+    <p>MAF uses graph-based workflows for explicit multi-agent coordination. Supports checkpointing, human-in-the-loop, and time-travel debugging.</p>
+    <pre><code class="language-python">from agent_framework.orchestrations import AgentWorkflow
+
+# Graph-based workflow with streaming,
+# checkpointing, human-in-the-loop, and time-travel
+
+workflow = AgentWorkflow()
+
+# Add agent nodes — each is a specialized agent
+workflow.add_node(&quot;supervisor&quot;, supervisor_agent)
+workflow.add_node(&quot;data_analyst&quot;, data_agent)
+workflow.add_node(&quot;fulfillment&quot;, fulfillment_agent)
+workflow.add_node(&quot;summarizer&quot;, summarizer_agent)
+
+# Deterministic routing with conditional edges
+workflow.add_edge(&quot;supervisor&quot;, &quot;data_analyst&quot;, condition=&quot;data_query&quot;)
+workflow.add_edge(&quot;supervisor&quot;, &quot;fulfillment&quot;, condition=&quot;order_mgmt&quot;)
+workflow.add_edge(&quot;data_analyst&quot;, &quot;supervisor&quot;)  # Report back
+workflow.add_edge(&quot;fulfillment&quot;, &quot;supervisor&quot;)
+
+# Run with streaming and checkpointing
+result = await workflow.run(
+    &quot;Show delayed orders and reschedule them&quot;,
+    stream=True,
+    checkpoint=True,  # Enables time-travel debugging
+)</code></pre>
+</div>
+<div>
+    <span class="framework-label-adk">Google ADK</span>
+    <p><strong>Sequential + Parallel + Loop Agents</strong></p>
+    <p>ADK provides workflow agents (SequentialAgent, ParallelAgent, LoopAgent) plus LLM-driven agent transfer. ADK 2.0 adds graph-based workflows.</p>
+    <pre><code class="language-python">from google.adk.agents import Agent, SequentialAgent, ParallelAgent
+
+# ADK: Workflow agents for deterministic flow control
+data_agent = Agent(
+    name=&quot;data_analyst&quot;,
+    model=&quot;gemini-2.5-flash&quot;,
+    description=&quot;Analyzes supply chain data from Snowflake.&quot;,
+    instruction=&quot;Analyze supply chain data.&quot;,
+    tools=[query_snowflake],
+)
+
+fulfillment_agent = Agent(
+    name=&quot;fulfillment_manager&quot;,
+    model=&quot;gemini-2.5-flash&quot;,
+    description=&quot;Manages order fulfillment via BlueYonder.&quot;,
+    instruction=&quot;Manage BlueYonder fulfillment.&quot;,
+    tools=[check_order_status],
+)
+
+# Sequential: agents run one after another
+pipeline = SequentialAgent(
+    name=&quot;pipeline&quot;,
+    sub_agents=[data_agent, fulfillment_agent],
+)
+
+# Parallel: agents run concurrently
+parallel = ParallelAgent(
+    name=&quot;parallel_analysis&quot;,
+    sub_agents=[data_agent, fulfillment_agent],
+)
+
+# LLM-driven transfer: agents can delegate to each other
+# via sub_agents on an Agent (dynamic routing)
+router = Agent(
+    name=&quot;router&quot;,
+    model=&quot;gemini-2.5-flash&quot;,
+    instruction=&quot;Route to the right specialist.&quot;,
+    sub_agents=[data_agent, fulfillment_agent],
+)</code></pre>
+</div>
+</div>
+
+<h3>4.2 — Advanced Orchestration Patterns</h3><hr>
+<div class="columns">
+<div>
+    <span class="framework-label-maf">Microsoft Agent Framework</span>
+    <p><strong>Fan-out/Fan-in + Conditional Routing</strong></p>
+    <p>MAF graph workflows support fan-out/fan-in, conditional edges, checkpoints, and durable tasks for long-running operations.</p>
+    <pre><code class="language-python"># Advanced orchestration patterns
+
+# Fan-out / Fan-in — parallel agent execution
+workflow.add_fan_out(&quot;supervisor&quot;, [&quot;data_analyst&quot;, &quot;fulfillment&quot;])
+workflow.add_fan_in([&quot;data_analyst&quot;, &quot;fulfillment&quot;], &quot;summarizer&quot;)
+
+# Human-in-the-loop — pause for approval
+workflow.add_human_checkpoint(
+    &quot;fulfillment&quot;,
+    prompt=&quot;Approve order cancellation?&quot;,
+    on_approve=&quot;confirm_cancel&quot;,
+    on_reject=&quot;supervisor&quot;,
+)
+
+# Loop — retry with feedback
+workflow.add_loop(
+    &quot;data_analyst&quot;,
+    max_iterations=3,
+    exit_condition=&quot;data_quality_check_passed&quot;,
+)</code></pre>
+</div>
+<div>
+    <span class="framework-label-adk">Google ADK</span>
+    <p><strong>LLM-driven Transfer + Sub-Agents</strong></p>
+    <p>ADK supports transfer_to_agent for LLM-driven delegation, plus hierarchical sub-agent composition.</p>
+    <pre><code class="language-python">from google.adk.agents import LoopAgent
+
+# Loop agent — repeats until exit condition
+loop = LoopAgent(
+    name=&quot;retry_analysis&quot;,
+    sub_agents=[data_agent],
+    max_iterations=3,
+)
+
+# ADK 2.0: Graph-based workflows
+# (New in ADK 2.0 — similar to MAF graph orchestration)
+# https://google.github.io/adk-docs/workflows/
+# Features: graph routes, data handling, human input,
+#           collaborative agents, dynamic workflows
+
+# Custom agents via BaseAgent for unique logic
+from google.adk.agents import BaseAgent
+
+class CustomRouter(BaseAgent):
+    &quot;&quot;&quot;Custom agent with your own execution logic.&quot;&quot;&quot;
+    async def _run_async_impl(self, ctx):
+        # Implement custom routing, validation, etc.
+        pass
+
+# A2A Protocol for cross-framework agent communication
+# Built-in support for exposing/consuming A2A agents
+# https://google.github.io/adk-docs/a2a/</code></pre>
+</div>
+</div>
+
+<h3>Orchestration Architecture</h3><hr>
+<div class="columns">
+<div>
+    <div class="maf-col"><h4 style="color:#4A90D9;">MAF: Graph Workflow</h4></div>
+    <pre><code class="language-text">┌─────────────────────────────┐
+│   Graph Workflow Engine     │
+│                             │
+│   [Start] → [Agent A]      │
+│              ↓              │
+│         [Checkpoint]        │
+│          ↙      ↘          │
+│   [Agent B]   [Agent C]    │
+│          ↘      ↙          │
+│         [Merge/Join]        │
+│              ↓              │
+│        [Human Review]       │
+│              ↓              │
+│           [End]             │
+│                             │
+│   Features:                 │
+│   • State checkpointing     │
+│   • Time-travel debugging   │
+│   • Human-in-the-loop       │
+│   • Durable tasks           │
+│   • Conditional edges       │
+└─────────────────────────────┘</code></pre>
+</div>
+<div>
+    <div class="adk-col"><h4 style="color:#34A853;">ADK: Workflow Agents</h4></div>
+    <pre><code class="language-text">┌─────────────────────────────┐
+│   Workflow Agent Types      │
+│                             │
+│   SequentialAgent:          │
+│   [A] → [B] → [C]          │
+│                             │
+│   ParallelAgent:            │
+│   [A] ─┐                   │
+│   [B] ─┤→ [Merge]          │
+│   [C] ─┘                   │
+│                             │
+│   LoopAgent:                │
+│   [A] → [Check] → [A]...   │
+│                             │
+│   LLM Transfer:             │
+│   [Router] ──→ [Specialist] │
+│            └──→ [Specialist]│
+│                             │
+│   ADK 2.0 Graph:            │
+│   [Node] → [Edge] → [Node] │
+│   (Alpha — evolving)        │
+└─────────────────────────────┘</code></pre>
+</div>
+</div>
+
+<div class="advantage-banner">
+    <h4>✅ MAF Advantage — Multi-Agent Orchestration</h4>
+    <ul><li><strong>Graph-first design</strong> — Native graph workflows from day one, not an add-on</li><li><strong>Checkpointing</strong> — Save and restore workflow state at any point</li><li><strong>Time-travel debugging</strong> — Replay and inspect any step in the workflow</li><li><strong>Durable tasks</strong> — Long-running operations survive process restarts</li><li><strong>Human-in-the-loop</strong> — Built-in checkpoint-based approval flows</li></ul>
+</div>
+
+<div class="footer">
+    Built for Show &amp; Tell — Microsoft Agent Framework v2 Responses API — March 2026
+</div>
+</main>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cross-Model Usage — MAF vs ADK</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<nav class="sidebar">
+    <h3>🗂️ MAF vs ADK</h3>
+    <ul><li><a href="index.html">🤖 Home</a></li>
+<li><a href="0-what-is.html">📚 What Is MAF vs ADK</a></li>
+<li><a href="1-agent-creation.html">🏗️ Agent Creation</a></li>
+<li><a href="2-tool-integration.html">🔧 Tool Integration</a></li>
+<li><a href="3-memory-state.html">🧠 Memory & State</a></li>
+<li><a href="4-multi-agent.html">🔀 Multi-Agent</a></li>
+<li><a href="5-deployment.html">🚀 Deployment</a></li>
+<li><a href="6-third-party.html">🔗 3rd Party</a></li>
+<li><a href="7-cross-model.html" class="active">🔄 Cross-Model</a></li>
+<li><a href="8-foundry-vs-vertex.html">☁️ Foundry vs Vertex</a></li>
+</ul>
+    <div class="sidebar-meta">
+        <p><strong>Baseline:</strong> MAF v2 Responses API</p>
+        <p><strong>Compared with:</strong> Google ADK</p>
+        <p style="margin-top:1rem;">March 2026</p>
+    </div>
+</nav>
+<div class="mobile-nav">
+    <select onchange="location.href=this.value">
+        <option value="index.html">🤖 Home</option>
+<option value="0-what-is.html">📚 What Is MAF vs ADK</option>
+<option value="1-agent-creation.html">🏗️ Agent Creation</option>
+<option value="2-tool-integration.html">🔧 Tool Integration</option>
+<option value="3-memory-state.html">🧠 Memory & State</option>
+<option value="4-multi-agent.html">🔀 Multi-Agent</option>
+<option value="5-deployment.html">🚀 Deployment</option>
+<option value="6-third-party.html">🔗 3rd Party</option>
+<option value="7-cross-model.html" selected>🔄 Cross-Model</option>
+<option value="8-foundry-vs-vertex.html">☁️ Foundry vs Vertex</option>
+
+    </select>
+</div>
+<main class="main-content">
+
+<h1 class="section-header">🔄 Cross-Model Usage — Mixing Frameworks & LLMs</h1>
+<p>Both frameworks support <strong>model-agnostic</strong> usage. You can use MAF with Gemini or ADK with Azure OpenAI / Foundry models.</p>
+<hr>
+
+<h2 style="color:#4A90D9;">1. Microsoft Agent Framework + Gemini LLM</h2>
+<p>MAF does <strong>not</strong> have a dedicated Gemini provider package, but there are <strong>three practical approaches</strong>.</p>
+
+<h3>Option A — Gemini via Azure AI Foundry (Recommended)</h3>
+<p>Azure AI Foundry hosts Gemini models in its Model Garden. Deploy and use with the standard <code>FoundryChatClient</code>.</p>
+<div class="columns">
+<div>
+    <pre><code class="language-python">from azure.identity import DefaultAzureCredential
+from agent_framework.foundry import FoundryChatClient, FoundryAgent
+
+# Deploy &quot;gemini-2.5-flash&quot; in Foundry Model Garden
+client = FoundryChatClient(
+    project_endpoint=&quot;https://ai-foundry-&lt;resource&gt;.services.ai.azure.com/&quot;,
+    credential=DefaultAzureCredential(),
+)
+agent = FoundryAgent(
+    client=client,
+    model=&quot;gemini-2.5-flash&quot;,
+    instructions=&quot;You are a helpful assistant powered by Gemini on Azure.&quot;,
+)
+response = await agent.run(&quot;Explain quantum computing briefly.&quot;)</code></pre>
+</div>
+<div>
+    <p><strong>Why this approach?</strong></p>
+    <ul>
+    <li><strong>Enterprise compliance</strong> — Gemini runs inside your Azure tenant</li>
+    <li><strong>Managed Identity</strong> — no API keys to manage</li>
+    <li><strong>Unified billing</strong> — single Azure invoice</li>
+    <li><strong>Same MAF code</strong> — just change the deployment name</li>
+    </ul>
+    <div class="success-box">✅ <strong>No code change required.</strong> Just deploy a Gemini model in Foundry and point at that deployment name.</div>
+</div>
+</div>
+
+<h3>Option B — Gemini's OpenAI-Compatible Endpoint (Direct)</h3>
+<pre><code class="language-python">from openai import OpenAI
+from agent_framework.openai import OpenAIChatCompletionClient
+
+client = OpenAI(
+    api_key=&quot;GOOGLE_API_KEY&quot;,
+    base_url=&quot;https://generativelanguage.googleapis.com/v1beta/openai/&quot;,
+)
+agent = OpenAIChatCompletionClient(client=client).as_agent(
+    model=&quot;gemini-2.5-flash&quot;,
+    instructions=&quot;You are a helpful assistant powered by Gemini.&quot;,
+)</code></pre>
+<div class="warning-box">⚠️ <strong>Data leaves Azure.</strong> API calls go to Google's servers. Ensure compliance with your data policies.</div>
+
+<h3>Option C — Gemma (Open-Source Gemini) via Ollama (Local)</h3>
+<pre><code class="language-python">from agent_framework.ollama import OllamaChatClient
+
+# Run locally: ollama pull gemma3
+client = OllamaChatClient(model=&quot;gemma3&quot;)
+agent = client.as_agent(
+    instructions=&quot;You are a helpful assistant powered by Gemma 3.&quot;,
+)</code></pre>
+<div class="success-box">🔒 <strong>Fully offline.</strong> No API calls, no data leaves your machine.</div>
+
+<h3>MAF + Gemini — Approach Comparison</h3>
+<table><thead><tr><th>Approach</th><th>Provider Package</th><th>Data Location</th><th>Best For</th></tr></thead><tbody><tr><td><strong>A. Foundry Model Garden</strong></td><td><code>agent-framework-foundry</code></td><td>Azure tenant</td><td>Enterprise production</td></tr>
+<tr><td><strong>B. Gemini OpenAI endpoint</strong></td><td><code>agent-framework-openai</code></td><td>Google servers</td><td>Quick prototyping</td></tr>
+<tr><td><strong>C. Gemma via Ollama</strong></td><td><code>agent-framework-ollama</code></td><td>Local machine</td><td>Offline / dev / testing</td></tr>
+</tbody></table>
+<hr>
+
+<h2 style="color:#34A853;">2. Google ADK + Azure OpenAI / Microsoft Foundry LLM</h2>
+<p>ADK provides a <strong>LiteLLM model connector</strong> that supports 100+ providers, including Azure OpenAI.</p>
+
+<h3>Option A — Azure OpenAI via LiteLLM (Recommended)</h3>
+<div class="columns">
+<div>
+    <p><strong>Setup</strong></p>
+    <pre><code class="language-bash">pip install google-adk litellm</code></pre>
+    <pre><code class="language-bash"># .env or export these
+AZURE_API_KEY=your-azure-openai-key
+AZURE_API_BASE=https://&lt;resource&gt;.openai.azure.com/
+AZURE_API_VERSION=2024-12-01-preview</code></pre>
+</div>
+<div>
+    <p><strong>Implementation</strong></p>
+    <pre><code class="language-python">from google.adk.agents import LlmAgent
+from google.adk.models.lite_llm import LiteLlm
+
+agent = LlmAgent(
+    model=LiteLlm(model=&quot;azure/gpt-4o&quot;),
+    name=&quot;azure_agent&quot;,
+    instruction=&quot;You are a helpful assistant powered by Azure OpenAI.&quot;,
+)</code></pre>
+</div>
+</div>
+
+<h3>Option B — Microsoft Foundry Models via LiteLLM</h3>
+<pre><code class="language-python">from google.adk.agents import LlmAgent
+from google.adk.models.lite_llm import LiteLlm
+
+agent = LlmAgent(
+    model=LiteLlm(
+        model=&quot;openai/gpt-4o&quot;,
+        api_base=&quot;https://ai-foundry-&lt;resource&gt;.services.ai.azure.com/openai/v1/&quot;,
+        api_key=&quot;your-foundry-api-key&quot;,
+    ),
+    name=&quot;foundry_agent&quot;,
+    instruction=&quot;You are a helpful assistant using Foundry-hosted models.&quot;,
+)</code></pre>
+
+<h3>ADK + Azure/Foundry — Approach Comparison</h3>
+<table><thead><tr><th>Approach</th><th>LiteLLM Model String</th><th>Env Vars</th><th>Best For</th></tr></thead><tbody><tr><td><strong>A. Azure OpenAI</strong></td><td><code>azure/&lt;deployment&gt;</code></td><td>AZURE_API_KEY, AZURE_API_BASE, AZURE_API_VERSION</td><td>Existing Azure OpenAI users</td></tr>
+<tr><td><strong>B. Foundry Models</strong></td><td><code>openai/&lt;model&gt;</code> + custom base</td><td>Foundry API key</td><td>Foundry-hosted multi-vendor</td></tr>
+<tr><td><strong>C. OpenAI Direct</strong></td><td><code>openai/&lt;model&gt;</code></td><td>OPENAI_API_KEY</td><td>Non-Azure OpenAI usage</td></tr>
+</tbody></table>
+<hr>
+
+<h2>🔑 Key Takeaways</h2>
+<div class="columns">
+<div class="maf-col">
+    <h4 style="color:#4A90D9;">MAF Cross-Model Summary</h4>
+    <ul>
+    <li><strong>Multiple paths to Gemini:</strong> Foundry Model Garden, OpenAI-compatible endpoint, or Gemma via Ollama</li>
+    <li><strong>Enterprise recommended:</strong> Deploy Gemini in Foundry for managed identity + compliance</li>
+    <li><strong>Code change is minimal:</strong> Just swap the model deployment name</li>
+    </ul>
+</div>
+<div class="adk-col">
+    <h4 style="color:#34A853;">ADK Cross-Model Summary</h4>
+    <ul>
+    <li><strong>LiteLLM is the bridge:</strong> Single integration point for 100+ providers</li>
+    <li><strong>Azure prefix <code>azure/</code>:</strong> Standard LiteLLM pattern for Azure OpenAI</li>
+    <li><strong>Same ADK features:</strong> Tools, memory, multi-agent all work regardless of LLM provider</li>
+    </ul>
+</div>
+</div>
+
+<div class="footer">
+    Built for Show &amp; Tell — Microsoft Agent Framework v2 Responses API — March 2026
+</div>
+</main>
+</body>
+</html>

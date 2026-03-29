@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deployment — MAF vs ADK</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<nav class="sidebar">
+    <h3>🗂️ MAF vs ADK</h3>
+    <ul><li><a href="index.html">🤖 Home</a></li>
+<li><a href="0-what-is.html">📚 What Is MAF vs ADK</a></li>
+<li><a href="1-agent-creation.html">🏗️ Agent Creation</a></li>
+<li><a href="2-tool-integration.html">🔧 Tool Integration</a></li>
+<li><a href="3-memory-state.html">🧠 Memory & State</a></li>
+<li><a href="4-multi-agent.html">🔀 Multi-Agent</a></li>
+<li><a href="5-deployment.html" class="active">🚀 Deployment</a></li>
+<li><a href="6-third-party.html">🔗 3rd Party</a></li>
+<li><a href="7-cross-model.html">🔄 Cross-Model</a></li>
+<li><a href="8-foundry-vs-vertex.html">☁️ Foundry vs Vertex</a></li>
+</ul>
+    <div class="sidebar-meta">
+        <p><strong>Baseline:</strong> MAF v2 Responses API</p>
+        <p><strong>Compared with:</strong> Google ADK</p>
+        <p style="margin-top:1rem;">March 2026</p>
+    </div>
+</nav>
+<div class="mobile-nav">
+    <select onchange="location.href=this.value">
+        <option value="index.html">🤖 Home</option>
+<option value="0-what-is.html">📚 What Is MAF vs ADK</option>
+<option value="1-agent-creation.html">🏗️ Agent Creation</option>
+<option value="2-tool-integration.html">🔧 Tool Integration</option>
+<option value="3-memory-state.html">🧠 Memory & State</option>
+<option value="4-multi-agent.html">🔀 Multi-Agent</option>
+<option value="5-deployment.html" selected>🚀 Deployment</option>
+<option value="6-third-party.html">🔗 3rd Party</option>
+<option value="7-cross-model.html">🔄 Cross-Model</option>
+<option value="8-foundry-vs-vertex.html">☁️ Foundry vs Vertex</option>
+
+    </select>
+</div>
+<main class="main-content">
+
+<h1 class="section-header">🚀 Chapter 5: Deployment & Production</h1>
+<p>Getting agents into production requires <strong>containerization, hosting, evaluation, and optimization</strong>.</p>
+<hr>
+
+<h3>5.1 — Containerization & Hosting</h3><hr>
+<div class="columns">
+<div>
+    <span class="framework-label-maf">Microsoft Agent Framework</span>
+    <p><strong>Azure AI Foundry Managed Hosting</strong></p>
+    <p>Deploy agents to Azure AI Foundry with managed hosting. Supports Azure Functions, Container Apps, and AKS.</p>
+    <pre><code class="language-python">FROM python:3.12-slim
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+# Foundry hosting adapter — standard port 8088
+EXPOSE 8088
+
+CMD [&quot;python&quot;, &quot;-m&quot;, &quot;azure.ai.agentserver.agentframework&quot;, \
+     &quot;--agent-module&quot;, &quot;app:agent&quot;]</code></pre>
+</div>
+<div>
+    <span class="framework-label-adk">Google ADK</span>
+    <p><strong>Vertex AI Agent Engine + Cloud Run/GKE</strong></p>
+    <p>Deploy to Vertex AI Agent Engine (serverless), Cloud Run, or GKE. Agent Starter Pack provides templates.</p>
+    <pre><code class="language-python">FROM python:3.12-slim
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+# ADK provides built-in API server via CLI
+EXPOSE 8080
+
+CMD [&quot;adk&quot;, &quot;api_server&quot;, \
+     &quot;--agent&quot;, &quot;app.agent&quot;, \
+     &quot;--host&quot;, &quot;0.0.0.0&quot;, \
+     &quot;--port&quot;, &quot;8080&quot;]
+
+# Also available:
+# adk web  — launches built-in Dev UI
+# adk run  — CLI-based agent interaction</code></pre>
+</div>
+</div>
+
+<h3>5.2 — Evaluation Framework</h3><hr>
+<div class="columns">
+<div>
+    <span class="framework-label-maf">Microsoft Agent Framework</span>
+    <p><strong>Built-in Evaluators + Prompt Optimization</strong></p>
+    <p>MAF provides built-in evaluators for intent, task completion, and groundedness. Plus prompt optimization from production traces.</p>
+    <pre><code class="language-python"># Evaluation via Azure AI Foundry
+# Supports quality metrics and prompt optimization
+
+# Use Foundry evaluations SDK or Azure AI CLI:
+# az ai foundry evaluation create \
+#     --agent-name supply-chain-assistant \
+#     --dataset supply-chain-test-cases \
+#     --evaluators intent task groundedness
+
+# Built-in evaluators include:
+# ✅ Intent resolution
+# ✅ Task adherence
+# ✅ Tool call accuracy
+# ✅ Groundedness (citation checking)
+
+# Prompt optimization from production traces
+# Foundry can harvest traces from Application Insights
+# and optimize instructions automatically.
+
+# AF Labs provides experimental benchmarking and
+# reinforcement learning packages:
+# https://github.com/microsoft/agent-framework/tree/main/python/packages/lab</code></pre>
+</div>
+<div>
+    <span class="framework-label-adk">Google ADK</span>
+    <p><strong>Built-in Eval Criteria + User Simulation</strong></p>
+    <p>ADK provides built-in eval criteria (tool_trajectory, response_match) and user simulation for automated testing.</p>
+    <pre><code class="language-python"># ADK: Built-in evaluation framework
+# https://google.github.io/adk-docs/evaluate/
+
+# ADK provides eval criteria, user simulation, and optimization:
+# - Run via CLI: adk eval
+# - Run via Dev UI: adk web (Evaluation tab)
+# - Optimization: https://google.github.io/adk-docs/optimize/
+
+# Define test cases with expected trajectories
+test_cases = [
+    {
+        &quot;input&quot;: &quot;What is SKU-4521 inventory?&quot;,
+        &quot;expected_tool_calls&quot;: [&quot;query_inventory&quot;],
+        &quot;expected_response_contains&quot;: &quot;SKU-4521&quot;,
+    },
+]
+
+# Evaluation criteria include:
+# ✅ Response quality assessment
+# ✅ Tool call trajectory evaluation
+# ✅ User simulation for multi-turn testing
+# ✅ Safety evaluation patterns
+# ✅ Custom metrics
+# ✅ Prompt optimization (via Optimization docs)
+
+# Deploy evaluation:
+# $ adk eval --agent app.agent --test test_cases.json</code></pre>
+</div>
+</div>
+
+<h3>5.3 — CI/CD & DevOps</h3><hr>
+<div class="columns">
+<div>
+    <span class="framework-label-maf">Microsoft Agent Framework</span>
+    <p><strong>GitOps with agent.yaml</strong></p>
+    <p>agent.yaml enables GitOps workflows. CI/CD pipelines read config, build containers, and deploy to Foundry.</p>
+    <pre><code class="language-python"># agent.yaml — version-controlled agent metadata
+name: supply-chain-assistant
+version: 1.2.0
+description: Enterprise supply chain AI agent with Snowflake &amp; BlueYonder
+model:
+  deployment: gpt-4o
+  parameters:
+    temperature: 0.1
+tools:
+  - query_snowflake
+  - check_order_status
+  - azure_ai_search:product-catalog
+environment:
+  SNOWFLAKE_ACCOUNT: &quot;{{secrets.SNOWFLAKE_ACCOUNT}}&quot;
+  BY_API_KEY: &quot;{{secrets.BY_API_KEY}}&quot;</code></pre>
+</div>
+<div>
+    <span class="framework-label-adk">Google ADK</span>
+    <p><strong>Container-based Deployment</strong></p>
+    <p>ADK uses standard container-based deployment. No built-in CI/CD patterns — use standard Docker/K8s workflows.</p>
+    <pre><code class="language-python"># Deploy to Google Cloud — multiple options
+
+# Option 1: Vertex AI Agent Engine (managed)
+# https://google.github.io/adk-docs/deploy/agent-engine/
+# Fully managed agent hosting on Google Cloud
+
+# Option 2: Cloud Run
+gcloud builds submit --tag gcr.io/$PROJECT/supply-chain-agent
+
+gcloud run deploy supply-chain-agent \
+    --image gcr.io/$PROJECT/supply-chain-agent \
+    --platform managed \
+    --region us-central1
+
+# Option 3: GKE (Kubernetes)
+# https://google.github.io/adk-docs/deploy/gke/
+
+# Option 4: Agent Starter Pack
+# Pre-configured deployment templates
+# https://google.github.io/adk-docs/deploy/agent-engine/asp/
+
+# ADK deployment features:
+# ✅ Vertex AI Agent Engine (managed hosting)
+# ✅ Cloud Run (serverless containers)
+# ✅ GKE (Kubernetes orchestration)
+# ✅ Agent Starter Pack (templates)
+# ⚠️ Authentication via Cloud IAM (manual setup)</code></pre>
+</div>
+</div>
+
+<h3>Production Readiness Matrix</h3><hr>
+<table><thead><tr><th>Capability</th><th>MAF</th><th>ADK</th></tr></thead><tbody><tr><td>Managed hosting</td><td>✅ Azure AI Foundry</td><td>✅ Vertex AI Agent Engine</td></tr>
+<tr><td>Container support</td><td>✅ Docker + AKS + Container Apps</td><td>✅ Docker + Cloud Run + GKE</td></tr>
+<tr><td>Serverless option</td><td>✅ Azure Functions adapter</td><td>✅ Agent Engine (serverless)</td></tr>
+<tr><td>Built-in evaluation</td><td>✅ Intent, Task, Groundedness</td><td>✅ Eval Criteria + User Sim</td></tr>
+<tr><td>Prompt optimization</td><td>✅ From production traces</td><td>❌ Manual</td></tr>
+<tr><td>CI/CD integration</td><td>✅ agent.yaml GitOps</td><td>⚠️ Standard Docker/K8s</td></tr>
+<tr><td>Observability</td><td>✅ Application Insights + OpenTelemetry</td><td>✅ Cloud Logging + Trace</td></tr>
+<tr><td>A/B testing agents</td><td>✅ Via agent versions</td><td>⚠️ Manual traffic splitting</td></tr>
+<tr><td>Cost monitoring</td><td>✅ Azure Cost Management</td><td>✅ GCP Billing</td></tr>
+<tr><td>Compliance</td><td>✅ Azure compliance certifications</td><td>✅ GCP compliance certifications</td></tr>
+</tbody></table>
+
+<div class="advantage-banner">
+    <h4>✅ MAF Advantage — Deployment & Production</h4>
+    <ul><li><strong>Prompt optimization from traces</strong> — Automatically improve agent instructions from production data</li><li><strong>agent.yaml GitOps</strong> — Declarative deployment pipeline integration</li><li><strong>Agent versioning</strong> — A/B test agent versions with traffic routing</li><li><strong>Azure compliance</strong> — SOC2, HIPAA, FedRAMP certifications</li></ul>
+</div>
+
+<div class="footer">
+    Built for Show &amp; Tell — Microsoft Agent Framework v2 Responses API — March 2026
+</div>
+</main>
+</body>
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3rd Party Integration — MAF vs ADK</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<nav class="sidebar">
+    <h3>🗂️ MAF vs ADK</h3>
+    <ul><li><a href="index.html">🤖 Home</a></li>
+<li><a href="0-what-is.html">📚 What Is MAF vs ADK</a></li>
+<li><a href="1-agent-creation.html">🏗️ Agent Creation</a></li>
+<li><a href="2-tool-integration.html">🔧 Tool Integration</a></li>
+<li><a href="3-memory-state.html">🧠 Memory & State</a></li>
+<li><a href="4-multi-agent.html">🔀 Multi-Agent</a></li>
+<li><a href="5-deployment.html">🚀 Deployment</a></li>
+<li><a href="6-third-party.html" class="active">🔗 3rd Party</a></li>
+<li><a href="7-cross-model.html">🔄 Cross-Model</a></li>
+<li><a href="8-foundry-vs-vertex.html">☁️ Foundry vs Vertex</a></li>
+</ul>
+    <div class="sidebar-meta">
+        <p><strong>Baseline:</strong> MAF v2 Responses API</p>
+        <p><strong>Compared with:</strong> Google ADK</p>
+        <p style="margin-top:1rem;">March 2026</p>
+    </div>
+</nav>
+<div class="mobile-nav">
+    <select onchange="location.href=this.value">
+        <option value="index.html">🤖 Home</option>
+<option value="0-what-is.html">📚 What Is MAF vs ADK</option>
+<option value="1-agent-creation.html">🏗️ Agent Creation</option>
+<option value="2-tool-integration.html">🔧 Tool Integration</option>
+<option value="3-memory-state.html">🧠 Memory & State</option>
+<option value="4-multi-agent.html">🔀 Multi-Agent</option>
+<option value="5-deployment.html">🚀 Deployment</option>
+<option value="6-third-party.html" selected>🔗 3rd Party</option>
+<option value="7-cross-model.html">🔄 Cross-Model</option>
+<option value="8-foundry-vs-vertex.html">☁️ Foundry vs Vertex</option>
+
+    </select>
+</div>
+<main class="main-content">
+
+<h1 class="section-header">🔗 Chapter 6: 3rd Party Integration</h1>
+<p>Enterprise agents need to connect to <strong>Snowflake, BlueYonder, and Microsoft Fabric</strong>. Here's how each framework handles these integrations.</p>
+<hr>
+
+<h3>Integration Architecture Overview</h3>
+<pre><code class="language-text">┌───────────────────────────────────────────────────────┐
+│                    AI Agent Layer                      │
+│  ┌──────────────────┐    ┌──────────────────────┐    │
+│  │  MAF Agent        │    │  ADK Agent            │    │
+│  │  (Azure Foundry)  │    │  (Vertex AI)          │    │
+│  └──────┬───────────┘    └──────┬───────────────┘    │
+│         │                       │                     │
+│  ┌──────▼───────────────────────▼───────────────┐    │
+│  │          Integration Methods                  │    │
+│  │  ┌─────────┐  ┌────────┐  ┌──────────────┐  │    │
+│  │  │   MCP   │  │Function│  │ Direct SDK   │  │    │
+│  │  │ Server  │  │  Tool  │  │ (Snowflake   │  │    │
+│  │  │         │  │        │  │  connector)  │  │    │
+│  │  └────┬────┘  └───┬────┘  └──────┬───────┘  │    │
+│  └───────┼────────────┼──────────────┼──────────┘    │
+│          │            │              │                │
+├──────────▼────────────▼──────────────▼────────────────┤
+│                 External Services                     │
+│  ┌──────────┐  ┌───────────┐  ┌──────────────────┐  │
+│  │Snowflake │  │BlueYonder │  │Microsoft Fabric  │  │
+│  │          │  │           │  │FabricIQ / WorkIQ │  │
+│  └──────────┘  └───────────┘  └──────────────────┘  │
+└───────────────────────────────────────────────────────┘</code></pre>
+<hr>
+
+<h3>6.1 — Snowflake Integration</h3><hr>
+<div class="columns">
+<div>
+    <span class="framework-label-maf">Microsoft Agent Framework</span>
+    <p><strong>MCP Server + Function Tool</strong></p>
+    <p>Connect via MCP server or FunctionTool. MAF supports Snowflake MCP with allowed_tools for access control.</p>
+    <pre><code class="language-python">from azure.ai.agents.models import McpToolDefinition, FunctionTool
+
+# Option 1: MCP Server for Snowflake
+snowflake_mcp = McpTool(
+    server_url=&quot;https://snowflake-mcp.azurewebsites.net/sse&quot;,
+    allowed_tools=[&quot;execute_query&quot;, &quot;list_tables&quot;],
+    # Managed Identity — no credentials in code
+)
+
+# Option 2: Function Tool with Snowflake connector
+import snowflake.connector
+
+def query_inventory(sku: str) -&gt; str:
+    &quot;&quot;&quot;Query Snowflake for inventory levels by SKU.&quot;&quot;&quot;
+    conn = snowflake.connector.connect(
+        account=os.environ[&quot;SNOWFLAKE_ACCOUNT&quot;],
+        authenticator=&quot;externalbrowser&quot;,  # SSO via Azure AD
+        warehouse=&quot;SUPPLY_CHAIN_WH&quot;,
+        database=&quot;INVENTORY_DB&quot;,
+    )
+    cursor = conn.cursor()
+    cursor.execute(
+        &quot;SELECT warehouse, qty FROM inventory WHERE sku = %s&quot;, (sku,)
+    )
+    rows = cursor.fetchall()
+    conn.close()
+    return str([{&quot;warehouse&quot;: r[0], &quot;qty&quot;: r[1]} for r in rows])
+
+agent = AzureOpenAIResponsesClient(
+    credential=AzureCliCredential(),
+).as_agent(
+    name=&quot;snowflake-agent&quot;,
+    tools=[snowflake_mcp, query_inventory],
+    instructions=&quot;Query Snowflake for supply chain data.&quot;,
+)</code></pre>
+</div>
+<div>
+    <span class="framework-label-adk">Google ADK</span>
+    <p><strong>Custom Function Tool</strong></p>
+    <p>ADK connects via custom function tools wrapping the Snowflake connector. No built-in Snowflake integration.</p>
+    <pre><code class="language-python"># ADK: Manual Snowflake integration
+import snowflake.connector
+
+def query_inventory(sku: str) -&gt; dict:
+    &quot;&quot;&quot;Query Snowflake — manual credential management.&quot;&quot;&quot;
+    conn = snowflake.connector.connect(
+        account=os.environ[&quot;SNOWFLAKE_ACCOUNT&quot;],
+        user=os.environ[&quot;SNOWFLAKE_USER&quot;],       # ⚠️ Manual creds
+        password=os.environ[&quot;SNOWFLAKE_PASSWORD&quot;], # ⚠️ No managed ID
+        warehouse=&quot;SUPPLY_CHAIN_WH&quot;,
+        database=&quot;INVENTORY_DB&quot;,
+    )
+    cursor = conn.cursor()
+    cursor.execute(
+        &quot;SELECT warehouse, qty FROM inventory WHERE sku = %s&quot;, (sku,)
+    )
+    rows = cursor.fetchall()
+    conn.close()
+    return {&quot;results&quot;: [{&quot;warehouse&quot;: r[0], &quot;qty&quot;: r[1]} for r in rows]}
+
+agent = Agent(
+    name=&quot;snowflake_agent&quot;,
+    model=&quot;gemini-2.5-flash&quot;,
+    instruction=&quot;Query Snowflake for supply chain data.&quot;,
+    tools=[query_inventory],
+)
+
+# ⚠️ No MCP built-in for Snowflake
+# ⚠️ Manual credential rotation required
+# ⚠️ No Azure AD SSO for Snowflake auth</code></pre>
+</div>
+</div>
+
+<h3>6.2 — BlueYonder Integration</h3><hr>
+<div class="columns">
+<div>
+    <span class="framework-label-maf">Microsoft Agent Framework</span>
+    <p><strong>Function Tool with API Client</strong></p>
+    <p>Wrap BlueYonder REST APIs as FunctionTool with type-safe schema generation.</p>
+    <pre><code class="language-python">from azure.ai.agents.models import FunctionTool
+import httpx
+
+BY_BASE_URL = os.environ[&quot;BLUEYONDER_API_URL&quot;]
+
+def get_order_status(order_id: str) -&gt; str:
+    &quot;&quot;&quot;Get order fulfillment status from BlueYonder.&quot;&quot;&quot;
+    resp = httpx.get(
+        f&quot;{BY_BASE_URL}/orders/{order_id}/status&quot;,
+        headers={&quot;Authorization&quot;: f&quot;Bearer {_get_by_token()}&quot;},
+    )
+    resp.raise_for_status()
+    return resp.json()
+
+def reschedule_delivery(order_id: str, new_date: str) -&gt; str:
+    &quot;&quot;&quot;Reschedule delivery in BlueYonder fulfillment system.&quot;&quot;&quot;
+    resp = httpx.post(
+        f&quot;{BY_BASE_URL}/orders/{order_id}/reschedule&quot;,
+        json={&quot;new_delivery_date&quot;: new_date},
+        headers={&quot;Authorization&quot;: f&quot;Bearer {_get_by_token()}&quot;},
+    )
+    resp.raise_for_status()
+    return f&quot;Order {order_id} rescheduled to {new_date}&quot;
+
+agent = AzureOpenAIResponsesClient(
+    credential=AzureCliCredential(),
+).as_agent(
+    name=&quot;fulfillment-agent&quot;,
+    tools=[get_order_status, reschedule_delivery],
+    instructions=&quot;Manage orders via BlueYonder fulfillment.&quot;,
+)</code></pre>
+</div>
+<div>
+    <span class="framework-label-adk">Google ADK</span>
+    <p><strong>Custom Function Tool</strong></p>
+    <p>Similar pattern — wrap BlueYonder APIs as custom functions.</p>
+    <pre><code class="language-python"># ADK: Manual BlueYonder REST integration
+import httpx
+
+def get_order_status(order_id: str) -&gt; dict:
+    &quot;&quot;&quot;Get BlueYonder order status — manual auth.&quot;&quot;&quot;
+    resp = httpx.get(
+        f&quot;{os.environ[&#x27;BY_API_URL&#x27;]}/orders/{order_id}/status&quot;,
+        headers={
+            &quot;Authorization&quot;: f&quot;Bearer {os.environ[&#x27;BY_API_KEY&#x27;]}&quot;
+            # ⚠️ Static API key — manual rotation
+        },
+    )
+    resp.raise_for_status()
+    return resp.json()
+
+def reschedule_delivery(order_id: str, new_date: str) -&gt; dict:
+    &quot;&quot;&quot;Reschedule via BlueYonder — manual auth.&quot;&quot;&quot;
+    resp = httpx.post(
+        f&quot;{os.environ[&#x27;BY_API_URL&#x27;]}/orders/{order_id}/reschedule&quot;,
+        json={&quot;new_delivery_date&quot;: new_date},
+        headers={
+            &quot;Authorization&quot;: f&quot;Bearer {os.environ[&#x27;BY_API_KEY&#x27;]}&quot;
+        },
+    )
+    resp.raise_for_status()
+    return {&quot;status&quot;: &quot;rescheduled&quot;, &quot;new_date&quot;: new_date}
+
+# Same pattern as MAF, but:
+# ⚠️ No managed identity — API keys in env vars
+# ⚠️ No Azure Key Vault integration</code></pre>
+</div>
+</div>
+
+<h3>6.3 — Microsoft Fabric / FabricIQ / WorkIQ</h3><hr>
+<div class="columns">
+<div>
+    <span class="framework-label-maf">Microsoft Agent Framework</span>
+    <p><strong>Native Azure Integration (Same Identity)</strong></p>
+    <p>MAF agents use the same Azure Managed Identity to access Fabric. FabricIQ provides AI-powered insights natively.</p>
+    <pre><code class="language-python">from azure.ai.agents.models import (
+    AzureAISearchToolDefinition,
+    FunctionTool,
+)
+from azure.identity import DefaultAzureCredential
+import httpx
+
+# FabricIQ — query Fabric lakehouse via Azure AI Search
+# Same identity plane: Azure AD → Fabric → AI Search → Agent
+fabric_search = AzureAISearchToolDefinition(
+    index_connection_id=&quot;fabric-lakehouse-index&quot;,
+    index_name=&quot;supply-chain-lakehouse&quot;,
+    query_type=&quot;vector_semantic_hybrid&quot;,
+    top_k=10,
+)
+
+# WorkIQ — workforce intelligence via Fabric REST API
+def get_workforce_metrics(region: str, date: str) -&gt; str:
+    &quot;&quot;&quot;Get WorkIQ workforce intelligence metrics from Fabric.&quot;&quot;&quot;
+    credential = DefaultAzureCredential()
+    token = credential.get_token(&quot;https://analysis.windows.net/powerbi/api/.default&quot;)
+    resp = httpx.get(
+        f&quot;https://api.fabric.microsoft.com/v1/workspaces/&quot;
+        f&quot;{{workspace_id}}/datasets/workiq/metrics&quot;,
+        params={&quot;region&quot;: region, &quot;date&quot;: date},
+        headers={&quot;Authorization&quot;: f&quot;Bearer {token.token}&quot;},
+    )
+    resp.raise_for_status()
+    return resp.json()
+
+agent = AzureOpenAIResponsesClient(
+    credential=AzureCliCredential(),
+).as_agent(
+    name=&quot;fabric-intelligence-agent&quot;,
+    tools=[fabric_search, get_workforce_metrics],
+    instructions=&quot;&quot;&quot;You are a Fabric intelligence agent.
+    Use Azure AI Search for FabricIQ lakehouse queries.
+    Use WorkIQ API for workforce intelligence metrics.
+    All authenticated via Azure AD — zero credential management.&quot;&quot;&quot;,
+)</code></pre>
+</div>
+<div>
+    <span class="framework-label-adk">Google ADK</span>
+    <p><strong>Custom REST API Connector</strong></p>
+    <p>ADK requires custom REST API connectors for Fabric. No Managed Identity — must manage API keys separately.</p>
+    <pre><code class="language-python"># ADK: No native Microsoft Fabric integration
+# Must build custom connectors for everything
+
+import httpx
+
+def query_fabric_lakehouse(query: str) -&gt; dict:
+    &quot;&quot;&quot;Custom Fabric connector — complex auth flow.&quot;&quot;&quot;
+    # Step 1: Get OAuth token for Fabric API
+    # (Must register app in Azure AD manually)
+    token_resp = httpx.post(
+        &quot;https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token&quot;,
+        data={
+            &quot;grant_type&quot;: &quot;client_credentials&quot;,
+            &quot;client_id&quot;: os.environ[&quot;AZURE_CLIENT_ID&quot;],
+            &quot;client_secret&quot;: os.environ[&quot;AZURE_CLIENT_SECRET&quot;],  # ⚠️
+            &quot;scope&quot;: &quot;https://analysis.windows.net/powerbi/api/.default&quot;,
+        },
+    )
+    token = token_resp.json()[&quot;access_token&quot;]
+
+    # Step 2: Query Fabric API
+    resp = httpx.post(
+        f&quot;https://api.fabric.microsoft.com/v1/workspaces/&quot;
+        f&quot;{os.environ[&#x27;FABRIC_WORKSPACE_ID&#x27;]}/queries&quot;,
+        json={&quot;query&quot;: query},
+        headers={&quot;Authorization&quot;: f&quot;Bearer {token}&quot;},
+    )
+    return resp.json()
+
+# ❌ No Azure AI Search integration (build RAG manually)
+# ❌ No FabricIQ native query support
+# ❌ No WorkIQ workforce intelligence API
+# ❌ No same-identity-plane — separate auth for each service
+# ❌ Client secrets in environment variables</code></pre>
+</div>
+</div>
+
+<h3>Integration Summary</h3><hr>
+<table><thead><tr><th>Service</th><th>MAF Approach</th><th>ADK Approach</th><th>MAF Advantage</th></tr></thead><tbody><tr><td>Snowflake</td><td>MCP + FunctionTool ✅</td><td>Custom function ⚠️</td><td>Built-in MCP with access control</td></tr>
+<tr><td>BlueYonder</td><td>FunctionTool ✅</td><td>Custom function ⚠️</td><td>Same pattern, better tooling</td></tr>
+<tr><td>Fabric / FabricIQ</td><td>Native (same identity) ✅</td><td>Custom connector ❌</td><td>Same Azure identity, zero setup</td></tr>
+<tr><td>WorkIQ</td><td>Azure Function adapter ✅</td><td>Not supported ❌</td><td>Native Azure integration</td></tr>
+</tbody></table>
+
+<div class="advantage-banner">
+    <h4>✅ MAF Advantage — 3rd Party Integration</h4>
+    <ul><li><strong>Fabric / FabricIQ / WorkIQ</strong> — Same Azure Managed Identity; zero additional auth setup</li><li><strong>Snowflake MCP</strong> — Built-in MCP server with fine-grained tool access control</li><li><strong>Enterprise SSO</strong> — Azure AD/Entra ID flows for all integrations</li></ul>
+</div>
+
+<div class="footer">
+    Built for Show &amp; Tell — Microsoft Agent Framework v2 Responses API — March 2026
+</div>
+</main>
+</body>
+</html>

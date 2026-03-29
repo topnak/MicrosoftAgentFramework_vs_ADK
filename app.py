@@ -35,7 +35,7 @@ with st.sidebar:
     8. ☁️ Foundry vs Vertex AI
     """)
     st.markdown("---")
-    st.markdown("**Baseline**: MAF v2 Responses API")
+    st.markdown("**Baseline**: MAF (OpenAI Responses)")
     st.markdown("**Compared with**: Google ADK")
     st.markdown("---")
     st.caption("Navigate sections using the sidebar pages ↑")
@@ -69,7 +69,7 @@ with col1:
         <ul>
         <li>Enterprise-grade SDK for Python & .NET</li>
         <li>Native Azure AI Foundry integration</li>
-        <li>OpenAI Responses API v2 (streaming)</li>
+        <li>OpenAI Responses protocol (streaming)</li>
         <li>Built-in tools: AI Search, Bing, Code Interpreter</li>
         <li>Graph-based multi-agent orchestration</li>
         <li>Long-term memory with auto-summarization</li>
@@ -133,13 +133,13 @@ matrix_data = {
     "Microsoft Agent Framework": [
         "Python & .NET ✅",
         "SDK + agent.yaml ✅",
-        "OpenAI Responses API v2 ✅",
+        "OpenAI Responses protocol ✅",
         "SSE streaming ✅",
         "WebSearchPreview ✅",
         "Azure AI Search ✅",
         "Built-in Code Interpreter ✅",
         "Native MCP ✅",
-        "Thread + Cosmos DB + Mem0 ✅",
+        "Session + Cosmos DB + Redis + Mem0 ✅",
         "Graph + Fan-out/in + Loop ✅",
         "Yes — with checkpointing ✅",
         "Built-in checkpoint ✅",
@@ -156,19 +156,19 @@ matrix_data = {
     "Google ADK": [
         "Python, TypeScript, Go, Java ✅",
         "Python code + Agent Config ✅",
-        "Runner.run_async() ⚠️",
+        "Runner.run_async() ✅",
         "Gemini Live API + Events ✅",
         "Google Search Grounding ✅",
-        "Vertex AI Search Grounding ⚠️",
+        "Vertex AI Search Grounding ✅",
         "BuiltInCodeExecutor ✅",
         "MCP Tools ✅",
-        "Memory Service ⚠️",
+        "Memory Service + State ✅",
         "Sequential + Parallel + Loop ✅",
-        "ADK 2.0 Alpha ⚠️",
-        "Graph workflows (2.0) ⚠️",
+        "ADK 2.0 Graph Workflows ✅",
+        "ADK 2.0 Human Input ✅",
         "GCP IAM (manual) ⚠️",
-        "Agent Config ⚠️",
-        "Eval Criteria + User Sim ✅",
+        "Agent Config ✅",
+        "Eval + User Sim + Optimization ✅",
         "Rich callback system ✅",
         "adk web UI ✅",
         "Native A2A Protocol ✅",
@@ -225,11 +225,11 @@ st.markdown("---")
 st.markdown("### 🎯 Live Demo — MAF Conversational Agent")
 st.info(
     "A live MAF chat agent is embedded in **Page 1: Agent Creation** — "
-    "scroll down to try the Responses API v2 streaming experience. "
-    "Configure your `.env` file with `FOUNDRY_PROJECT_ENDPOINT` and "
-    "`FOUNDRY_MODEL_DEPLOYMENT_NAME` to connect to your Foundry project.",
+    "scroll down to try the OpenAI Responses streaming experience. "
+    "Configure your `.env` file with `AZURE_OPENAI_ENDPOINT` and "
+    "deployment name to connect.",
     icon="💡",
 )
 
 st.markdown("---")
-st.caption("Built with Streamlit • Microsoft Agent Framework v2 Responses API • March 2026")
+st.caption("Built with Streamlit • Microsoft Agent Framework (OpenAI Responses) • March 2026")

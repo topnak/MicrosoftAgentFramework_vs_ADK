@@ -242,8 +242,8 @@ st.markdown(
             <li><strong>Unified Identity</strong> — Azure AD Managed Identity flows through every service (Snowflake, BlueYonder, Fabric, AI Search) with zero credential management</li>
             <li><strong>Native Fabric</strong> — FabricIQ and WorkIQ are first-class citizens in the Azure ecosystem; Google ADK has no Fabric story</li>
             <li><strong>Enterprise Tools</strong> — Built-in RAG, Code Interpreter, Bing, and MCP eliminate weeks of custom tool development</li>
-            <li><strong>Production Platform</strong> — Evaluation, prompt optimization, dataset harvesting, and observability come built-in with Foundry</li>
-            <li><strong>Graph Orchestration</strong> — Flexible, deterministic multi-agent workflows with human-in-the-loop; ADK limited to Sequential/Parallel</li>
+            <li><strong>Production Platform</strong> — Evaluation, prompt optimization, and observability come built-in with Foundry</li>
+            <li><strong>Graph Orchestration</strong> — Flexible, deterministic multi-agent workflows with human-in-the-loop; ADK 2.0 adds graph workflows</li>
         </ul>
     </div>
     """,

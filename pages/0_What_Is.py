@@ -39,7 +39,7 @@ with col1:
         <ul>
         <li><strong>Package:</strong> <code>pip install agent-framework</code></li>
         <li><strong>Languages:</strong> Python & .NET (C#)</li>
-        <li><strong>API Baseline:</strong> OpenAI Responses API v2</li>
+        <li><strong>API Baseline:</strong> OpenAI Responses protocol</li>
         <li><strong>Cloud:</strong> Azure AI Foundry</li>
         <li><strong>Stars:</strong> 8.2k+ GitHub</li>
         <li><strong>Latest:</strong> python-1.0.0rc5</li>
@@ -66,7 +66,7 @@ with col2:
         <li><strong>API Baseline:</strong> Runner + Event pattern</li>
         <li><strong>Cloud:</strong> Vertex AI / Cloud Run / GKE</li>
         <li><strong>SDK repos:</strong> adk-python, adk-js, adk-go, adk-java</li>
-        <li><strong>Latest:</strong> ADK 2.0 Alpha (graph workflows)</li>
+        <li><strong>Latest:</strong> ADK 2.0 (graph workflows)</li>
         </ul>
         </div>
         """,
@@ -121,7 +121,7 @@ with col1:
 ├─────────────────────────────────────────┤
 │  Layer 2: AGENT CORE                    │
 │  AzureOpenAIResponsesClient · .as_agent │
-│  Responses API v2 · Streaming           │
+│  OpenAI Responses · Streaming             │
 │  Middleware · OpenTelemetry              │
 ├─────────────────────────────────────────┤
 │  Layer 1: PROVIDERS                     │
@@ -209,7 +209,7 @@ layer_comparison = {
         "Graph workflows with checkpointing, human-in-the-loop, time-travel, durable tasks",
         "Thread persistence, long-term memory, user profiles, Azure Cosmos DB, Redis, Mem0",
         "Function tools, MCP, AI Search, Code Interpreter, Web Search, Bing Grounding",
-        "AzureOpenAIResponsesClient.as_agent(), Responses API v2, middleware, OpenTelemetry",
+        "AzureOpenAIResponsesClient.as_agent(), OpenAI Responses, middleware, OpenTelemetry",
         "OpenAI, Azure OpenAI, Anthropic, Bedrock, Ollama, Claude, Foundry Local, Copilot Studio",
     ],
     "ADK Approach": [
@@ -323,7 +323,7 @@ with col1:
         <h4 style="color:#4A90D9;">MAF: Enterprise-First</h4>
         <ol>
         <li><strong>Managed resources</strong> — Agents are cloud resources with IDs, versioning, lifecycle management</li>
-        <li><strong>OpenAI API compatible</strong> — Uses Responses API v2, works with any OpenAI-compatible client</li>
+        <li><strong>OpenAI API compatible</strong> — Uses OpenAI Responses protocol, works with any OpenAI-compatible client</li>
         <li><strong>Azure-native security</strong> — Managed Identity, RBAC, Key Vault, private networking</li>
         <li><strong>Multi-language</strong> — Same patterns in Python and .NET</li>
         <li><strong>Declarative config</strong> — agent.yaml for GitOps workflows</li>

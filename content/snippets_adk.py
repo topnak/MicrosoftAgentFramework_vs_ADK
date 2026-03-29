@@ -1,17 +1,17 @@
-"""Google Agent Development Kit (ADK) code snippets for comparison."""
+"""Google Agent Development Kit (ADK) code snippets — based on official docs (google.github.io/adk-docs/)."""
 
 # ─────────────────────────────────────────────
 # Section 1: Agent Creation
 # ─────────────────────────────────────────────
 
 AGENT_CREATION_BASIC = '''\
-from google.adk.agents import LlmAgent
+from google.adk.agents import Agent  # LlmAgent aliased as Agent
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
 
-# LlmAgent (aliased as Agent) is the core component
-agent = LlmAgent(
+# Agent (alias for LlmAgent) is the core component
+agent = Agent(
     name="supply_chain_assistant",
     model="gemini-2.5-flash",
     description="Handles supply chain queries.",
@@ -95,7 +95,7 @@ async for event in runner.run_async(
 # ─────────────────────────────────────────────
 
 TOOLS_FUNCTION = '''\
-from google.adk.agents import LlmAgent
+from google.adk.agents import Agent
 
 def query_snowflake(query: str, warehouse: str = "COMPUTE_WH") -> dict:
     """Execute a query against Snowflake data warehouse."""
@@ -107,7 +107,7 @@ def check_order_status(order_id: str) -> dict:
     return {"status": "In Transit", "eta": "2 days"}
 
 # ADK auto-wraps plain functions as FunctionTool
-agent = LlmAgent(
+agent = Agent(
     name="multi_tool_agent",
     model="gemini-2.5-flash",
     instruction="Use tools to answer supply chain questions.",
@@ -117,11 +117,11 @@ agent = LlmAgent(
 '''
 
 TOOLS_SEARCH = '''\
-from google.adk.agents import LlmAgent
+from google.adk.agents import Agent
 from google.adk.tools import google_search
 
 # Built-in: Google Search Grounding
-agent = LlmAgent(
+agent = Agent(
     name="search_agent",
     model="gemini-2.5-flash",
     instruction="Search the web for information.",
@@ -139,11 +139,11 @@ agent = LlmAgent(
 '''
 
 TOOLS_CODE_EXEC = '''\
-from google.adk.agents import LlmAgent
+from google.adk.agents import Agent
 from google.adk.code_executors import BuiltInCodeExecutor
 
 # ADK: Built-in code execution via Gemini API
-code_agent = LlmAgent(
+code_agent = Agent(
     name="calculator_agent",
     model="gemini-2.5-flash",
     code_executor=BuiltInCodeExecutor(),
@@ -162,8 +162,7 @@ code_agent = LlmAgent(
 
 TOOLS_MCP = '''\
 # ADK: MCP tool support
-from google.adk.tools.mcp_tool import MCPToolset
-from google.adk.tools.mcp_tool import SseServerParams
+from google.adk.tools.mcp_tool import MCPToolset, SseServerParams
 
 # Connect to MCP server
 tools, cleanup = await MCPToolset.from_server(
@@ -172,7 +171,7 @@ tools, cleanup = await MCPToolset.from_server(
     ),
 )
 
-agent = LlmAgent(
+agent = Agent(
     name="mcp_agent",
     model="gemini-2.5-flash",
     instruction="Query Snowflake via MCP.",
@@ -225,7 +224,7 @@ session = await session_service.get_session(
 state = session.state  # Dict-like state object
 
 # output_key saves agent response to state automatically
-agent = LlmAgent(
+agent = Agent(
     name="analyst",
     model="gemini-2.5-flash",
     output_key="analysis_result",  # Auto-saved to state
@@ -250,10 +249,10 @@ memory_service = InMemoryMemoryService()
 # ─────────────────────────────────────────────
 
 MULTI_AGENT_BASIC = '''\
-from google.adk.agents import LlmAgent, SequentialAgent, ParallelAgent
+from google.adk.agents import Agent, SequentialAgent, ParallelAgent
 
 # ADK: Workflow agents for deterministic flow control
-data_agent = LlmAgent(
+data_agent = Agent(
     name="data_analyst",
     model="gemini-2.5-flash",
     description="Analyzes supply chain data from Snowflake.",
@@ -261,7 +260,7 @@ data_agent = LlmAgent(
     tools=[query_snowflake],
 )
 
-fulfillment_agent = LlmAgent(
+fulfillment_agent = Agent(
     name="fulfillment_manager",
     model="gemini-2.5-flash",
     description="Manages order fulfillment via BlueYonder.",
@@ -282,8 +281,8 @@ parallel = ParallelAgent(
 )
 
 # LLM-driven transfer: agents can delegate to each other
-# via sub_agents on an LlmAgent (dynamic routing)
-router = LlmAgent(
+# via sub_agents on an Agent (dynamic routing)
+router = Agent(
     name="router",
     model="gemini-2.5-flash",
     instruction="Route to the right specialist.",
@@ -301,7 +300,7 @@ loop = LoopAgent(
     max_iterations=3,
 )
 
-# ADK 2.0 Alpha: Graph-based workflows
+# ADK 2.0: Graph-based workflows
 # (New in ADK 2.0 — similar to MAF graph orchestration)
 # https://google.github.io/adk-docs/workflows/
 # Features: graph routes, data handling, human input,
@@ -381,9 +380,10 @@ DEPLOY_NO_EVAL = '''\
 # ADK: Built-in evaluation framework
 # https://google.github.io/adk-docs/evaluate/
 
-# ADK provides eval criteria and user simulation:
+# ADK provides eval criteria, user simulation, and optimization:
 # - Run via CLI: adk eval
 # - Run via Dev UI: adk web (Evaluation tab)
+# - Optimization: https://google.github.io/adk-docs/optimize/
 
 # Define test cases with expected trajectories
 test_cases = [
@@ -399,15 +399,11 @@ test_cases = [
 # ✅ Tool call trajectory evaluation
 # ✅ User simulation for multi-turn testing
 # ✅ Safety evaluation patterns
+# ✅ Custom metrics
+# ✅ Prompt optimization (via Optimization docs)
 
 # Deploy evaluation:
 # $ adk eval --agent app.agent --test test_cases.json
-
-# ⚠️ Less comprehensive than MAF eval:
-# - No prompt optimization from production traces
-# - No dataset harvesting from live traffic
-# - No built-in A/B testing framework
-# - No enterprise metrics (intent, groundedness)
 '''
 
 # ─────────────────────────────────────────────
@@ -437,7 +433,7 @@ def query_inventory(sku: str) -> dict:
 
 agent = Agent(
     name="snowflake_agent",
-    model="gemini-2.0-flash",
+    model="gemini-2.5-flash",
     instruction="Query Snowflake for supply chain data.",
     tools=[query_inventory],
 )

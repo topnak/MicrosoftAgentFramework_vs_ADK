@@ -1,0 +1,148 @@
+2026-03-26T14:38:07.3761758Z    _____                               
+2026-03-26T14:38:07.3763628Z   /  _  \ __________ _________   ____  
+2026-03-26T14:38:07.3763679Z  /  /_\  \\___   /  |  \_  __ \_/ __ \ 
+2026-03-26T14:38:07.3763703Z /    |    \/    /|  |  /|  | \/\  ___/ 
+2026-03-26T14:38:07.3763725Z \____|__  /_____ \____/ |__|    \___  >
+2026-03-26T14:38:07.3837863Z         \/      \/                  \/ 
+2026-03-26T14:38:07.3837918Z A P P   S E R V I C E   O N   L I N U X
+2026-03-26T14:38:07.3837990Z 
+2026-03-26T14:38:07.3838026Z Documentation    : http://aka.ms/webapp-linux
+2026-03-26T14:38:07.3838053Z Python quickstart: https://aka.ms/python-qs
+2026-03-26T14:38:07.3838077Z Python version   : 3.12.12
+2026-03-26T14:38:07.3838100Z Instance Name    : lw1sdlwk0008G7
+2026-03-26T14:38:07.3838129Z Instance Id      : b03cf6e44d578eb29815430a6ea92335cf28d5439f26b3329828a1c449568624
+2026-03-26T14:38:07.3838167Z 
+2026-03-26T14:38:07.3838191Z Note: Any data outside '/home' is not persisted
+2026-03-26T14:38:09.4150422Z Starting OpenBSD Secure Shell server: sshd.
+2026-03-26T14:38:09.4347683Z WEBSITES_INCLUDE_CLOUD_CERTS is not set to true.
+2026-03-26T14:38:09.4945844Z Updating certificates in /etc/ssl/certs...
+2026-03-26T14:38:29.8515207Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_RSA_Root_CA_2022.pem
+2026-03-26T14:38:29.8611562Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_E46.pem
+2026-03-26T14:38:29.8718432Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_R46.pem
+2026-03-26T14:38:29.8816116Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_ECC_Root_CA_2022.pem
+2026-03-26T14:38:29.9109072Z 4 added, 0 removed; done.
+2026-03-26T14:38:29.9116794Z Running hooks in /etc/ca-certificates/update.d...
+2026-03-26T14:38:29.9223323Z done.
+2026-03-26T14:38:29.9593553Z CA certificates copied and updated successfully.
+2026-03-26T14:38:30.0513942Z Site's appCommandLine: python -m streamlit run app.py --server.port 8000 --server.address 0.0.0.0 --server.headless true
+2026-03-26T14:38:30.4646119Z Starting periodic command scheduler: cron.
+2026-03-26T14:38:30.4746577Z Launching oryx with: create-script -appPath /home/site/wwwroot -output /opt/startup/startup.sh -virtualEnvName antenv -defaultApp /opt/defaultsite -userStartupCommand 'python -m streamlit run app.py --server.port 8000 --server.address 0.0.0.0 --server.headless true'
+2026-03-26T14:38:30.6656355Z Could not find build manifest file at '/home/site/wwwroot/oryx-manifest.toml'
+2026-03-26T14:38:30.6665044Z Could not find operation ID in manifest. Generating an operation id...
+2026-03-26T14:38:30.6738645Z Build Operation ID: de710f12-7c5c-45b5-b14f-a5df0bfd7731
+2026-03-26T14:38:31.1390353Z Oryx Version: 0.2.20260130.1, Commit: a98e9aef5dfb6572a08b0a07ce414e1122ab4a2e, ReleaseTagName: 20260130.1
+2026-03-26T14:38:31.1688901Z Writing output script to '/opt/startup/startup.sh'
+2026-03-26T14:38:31.2788385Z WARNING: Could not find virtual environment directory /home/site/wwwroot/antenv.
+2026-03-26T14:38:31.2792378Z WARNING: Could not find package directory /home/site/wwwroot/__oryx_packages__.
+2026-03-26T14:38:31.3997605Z /opt/python/3.12.12/bin/python: No module named streamlit
+2026-03-26T14:38:41.4641047Z    _____                               
+2026-03-26T14:38:41.4641577Z   /  _  \ __________ _________   ____  
+2026-03-26T14:38:41.4641610Z  /  /_\  \\___   /  |  \_  __ \_/ __ \ 
+2026-03-26T14:38:41.4641626Z /    |    \/    /|  |  /|  | \/\  ___/ 
+2026-03-26T14:38:41.4641642Z \____|__  /_____ \____/ |__|    \___  >
+2026-03-26T14:38:41.4641657Z         \/      \/                  \/ 
+2026-03-26T14:38:41.4641672Z A P P   S E R V I C E   O N   L I N U X
+2026-03-26T14:38:41.4641686Z 
+2026-03-26T14:38:41.4641703Z Documentation    : http://aka.ms/webapp-linux
+2026-03-26T14:38:41.4641720Z Python quickstart: https://aka.ms/python-qs
+2026-03-26T14:38:41.4641735Z Python version   : 3.12.12
+2026-03-26T14:38:41.4641750Z Instance Name    : lw1sdlwk0008G7
+2026-03-26T14:38:41.4641789Z Instance Id      : b03cf6e44d578eb29815430a6ea92335cf28d5439f26b3329828a1c449568624
+2026-03-26T14:38:41.4641803Z 
+2026-03-26T14:38:41.4641819Z Note: Any data outside '/home' is not persisted
+2026-03-26T14:38:42.4288803Z Starting OpenBSD Secure Shell server: sshd.
+2026-03-26T14:38:42.4559434Z WEBSITES_INCLUDE_CLOUD_CERTS is not set to true.
+2026-03-26T14:38:42.4972136Z Updating certificates in /etc/ssl/certs...
+2026-03-26T14:38:59.4184096Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_RSA_Root_CA_2022.pem
+2026-03-26T14:38:59.4184399Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_E46.pem
+2026-03-26T14:38:59.4607358Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_R46.pem
+2026-03-26T14:38:59.4996007Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_ECC_Root_CA_2022.pem
+2026-03-26T14:38:59.5606636Z 4 added, 0 removed; done.
+2026-03-26T14:38:59.5698108Z Running hooks in /etc/ca-certificates/update.d...
+2026-03-26T14:38:59.5885097Z done.
+2026-03-26T14:38:59.6183724Z CA certificates copied and updated successfully.
+2026-03-26T14:38:59.7019150Z Site's appCommandLine: python -m streamlit run app.py --server.port 8000 --server.address 0.0.0.0 --server.headless true
+2026-03-26T14:39:00.2026077Z Starting periodic command scheduler: cron.
+2026-03-26T14:39:00.2034397Z Launching oryx with: create-script -appPath /home/site/wwwroot -output /opt/startup/startup.sh -virtualEnvName antenv -defaultApp /opt/defaultsite -userStartupCommand 'python -m streamlit run app.py --server.port 8000 --server.address 0.0.0.0 --server.headless true'
+2026-03-26T14:39:00.2314982Z Could not find build manifest file at '/home/site/wwwroot/oryx-manifest.toml'
+2026-03-26T14:39:00.2324382Z Could not find operation ID in manifest. Generating an operation id...
+2026-03-26T14:39:00.2324627Z Build Operation ID: dd8f440e-0f06-4726-a36b-64882edeeb11
+2026-03-26T14:39:00.7454470Z Oryx Version: 0.2.20260130.1, Commit: a98e9aef5dfb6572a08b0a07ce414e1122ab4a2e, ReleaseTagName: 20260130.1
+2026-03-26T14:39:00.7854965Z Writing output script to '/opt/startup/startup.sh'
+2026-03-26T14:39:00.8646545Z WARNING: Could not find virtual environment directory /home/site/wwwroot/antenv.
+2026-03-26T14:39:00.8651678Z WARNING: Could not find package directory /home/site/wwwroot/__oryx_packages__.
+2026-03-26T14:39:01.8525289Z /opt/python/3.12.12/bin/python: No module named streamlit
+2026-03-26T14:39:28.1463535Z    _____                               
+2026-03-26T14:39:28.1465427Z   /  _  \ __________ _________   ____  
+2026-03-26T14:39:28.1465478Z  /  /_\  \\___   /  |  \_  __ \_/ __ \ 
+2026-03-26T14:39:28.1465570Z /    |    \/    /|  |  /|  | \/\  ___/ 
+2026-03-26T14:39:28.1465596Z \____|__  /_____ \____/ |__|    \___  >
+2026-03-26T14:39:28.1465626Z         \/      \/                  \/ 
+2026-03-26T14:39:28.1465648Z A P P   S E R V I C E   O N   L I N U X
+2026-03-26T14:39:28.1465670Z 
+2026-03-26T14:39:28.1465696Z Documentation    : http://aka.ms/webapp-linux
+2026-03-26T14:39:28.1465723Z Python quickstart: https://aka.ms/python-qs
+2026-03-26T14:39:28.1465766Z Python version   : 3.12.12
+2026-03-26T14:39:28.1465790Z Instance Name    : lw1sdlwk0008G7
+2026-03-26T14:39:28.1465817Z Instance Id      : b03cf6e44d578eb29815430a6ea92335cf28d5439f26b3329828a1c449568624
+2026-03-26T14:39:28.1465839Z 
+2026-03-26T14:39:28.1465862Z Note: Any data outside '/home' is not persisted
+2026-03-26T14:39:29.2640057Z Starting OpenBSD Secure Shell server: sshd.
+2026-03-26T14:39:29.2837611Z WEBSITES_INCLUDE_CLOUD_CERTS is not set to true.
+2026-03-26T14:39:29.3627690Z Updating certificates in /etc/ssl/certs...
+2026-03-26T14:39:52.7970380Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_RSA_Root_CA_2022.pem
+2026-03-26T14:39:52.8066737Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_E46.pem
+2026-03-26T14:39:52.8255608Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_R46.pem
+2026-03-26T14:39:52.8364704Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_ECC_Root_CA_2022.pem
+2026-03-26T14:39:52.8771934Z 4 added, 0 removed; done.
+2026-03-26T14:39:52.8772282Z Running hooks in /etc/ca-certificates/update.d...
+2026-03-26T14:39:52.8972886Z done.
+2026-03-26T14:39:52.9262764Z CA certificates copied and updated successfully.
+2026-03-26T14:39:53.1176840Z Site's appCommandLine: python -m streamlit run app.py --server.port 8000 --server.address 0.0.0.0 --server.headless true
+2026-03-26T14:39:53.4914872Z Starting periodic command scheduler: cron.
+2026-03-26T14:39:53.4995445Z Launching oryx with: create-script -appPath /home/site/wwwroot -output /opt/startup/startup.sh -virtualEnvName antenv -defaultApp /opt/defaultsite -userStartupCommand 'python -m streamlit run app.py --server.port 8000 --server.address 0.0.0.0 --server.headless true'
+2026-03-26T14:39:53.7110588Z Could not find build manifest file at '/home/site/wwwroot/oryx-manifest.toml'
+2026-03-26T14:39:53.7116626Z Could not find operation ID in manifest. Generating an operation id...
+2026-03-26T14:39:53.7116820Z Build Operation ID: c1e9b5fa-02f3-4e4b-b47d-a9cd291268e0
+2026-03-26T14:39:54.5464449Z Oryx Version: 0.2.20260130.1, Commit: a98e9aef5dfb6572a08b0a07ce414e1122ab4a2e, ReleaseTagName: 20260130.1
+2026-03-26T14:39:54.5940323Z Writing output script to '/opt/startup/startup.sh'
+2026-03-26T14:39:54.7073152Z WARNING: Could not find virtual environment directory /home/site/wwwroot/antenv.
+2026-03-26T14:39:54.7147899Z WARNING: Could not find package directory /home/site/wwwroot/__oryx_packages__.
+2026-03-26T14:39:54.9880827Z /opt/python/3.12.12/bin/python: No module named streamlit
+2026-03-26T14:40:09.1875698Z    _____                               
+2026-03-26T14:40:09.1876209Z   /  _  \ __________ _________   ____  
+2026-03-26T14:40:09.1876236Z  /  /_\  \\___   /  |  \_  __ \_/ __ \ 
+2026-03-26T14:40:09.1876252Z /    |    \/    /|  |  /|  | \/\  ___/ 
+2026-03-26T14:40:09.1876268Z \____|__  /_____ \____/ |__|    \___  >
+2026-03-26T14:40:09.1876283Z         \/      \/                  \/ 
+2026-03-26T14:40:09.1876298Z A P P   S E R V I C E   O N   L I N U X
+2026-03-26T14:40:09.1876312Z 
+2026-03-26T14:40:09.1876329Z Documentation    : http://aka.ms/webapp-linux
+2026-03-26T14:40:09.1876346Z Python quickstart: https://aka.ms/python-qs
+2026-03-26T14:40:09.1876360Z Python version   : 3.12.12
+2026-03-26T14:40:09.1876377Z Instance Name    : lw1sdlwk0008G7
+2026-03-26T14:40:09.1876415Z Instance Id      : b03cf6e44d578eb29815430a6ea92335cf28d5439f26b3329828a1c449568624
+2026-03-26T14:40:09.1876430Z 
+2026-03-26T14:40:09.1876446Z Note: Any data outside '/home' is not persisted
+2026-03-26T14:40:10.8238689Z Starting OpenBSD Secure Shell server: sshd.
+2026-03-26T14:40:10.8634498Z WEBSITES_INCLUDE_CLOUD_CERTS is not set to true.
+2026-03-26T14:40:10.9636922Z Updating certificates in /etc/ssl/certs...
+2026-03-26T14:40:32.1636092Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_RSA_Root_CA_2022.pem
+2026-03-26T14:40:32.1636658Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_E46.pem
+2026-03-26T14:40:32.1762641Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_R46.pem
+2026-03-26T14:40:32.1860551Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_ECC_Root_CA_2022.pem
+2026-03-26T14:40:32.6191753Z 4 added, 0 removed; done.
+2026-03-26T14:40:32.6474600Z Running hooks in /etc/ca-certificates/update.d...
+2026-03-26T14:40:32.6474894Z done.
+2026-03-26T14:40:32.6474919Z CA certificates copied and updated successfully.
+2026-03-26T14:40:32.6474938Z Site's appCommandLine: python -m streamlit run app.py --server.port 8000 --server.address 0.0.0.0 --server.headless true
+2026-03-26T14:40:33.1495180Z Starting periodic command scheduler: cron.
+2026-03-26T14:40:33.1495680Z Launching oryx with: create-script -appPath /home/site/wwwroot -output /opt/startup/startup.sh -virtualEnvName antenv -defaultApp /opt/defaultsite -userStartupCommand 'python -m streamlit run app.py --server.port 8000 --server.address 0.0.0.0 --server.headless true'
+2026-03-26T14:40:33.4419889Z Could not find build manifest file at '/home/site/wwwroot/oryx-manifest.toml'
+2026-03-26T14:40:33.4425008Z Could not find operation ID in manifest. Generating an operation id...
+2026-03-26T14:40:33.4429665Z Build Operation ID: ba913b65-8316-48dd-a18b-d20bf4a41eb2
+2026-03-26T14:40:34.1062563Z Oryx Version: 0.2.20260130.1, Commit: a98e9aef5dfb6572a08b0a07ce414e1122ab4a2e, ReleaseTagName: 20260130.1
+2026-03-26T14:40:34.1461619Z Writing output script to '/opt/startup/startup.sh'
+2026-03-26T14:40:34.2250750Z WARNING: Could not find virtual environment directory /home/site/wwwroot/antenv.
+2026-03-26T14:40:34.2262756Z WARNING: Could not find package directory /home/site/wwwroot/__oryx_packages__.
+2026-03-26T14:40:34.4071146Z /opt/python/3.12.12/bin/python: No module named streamlit

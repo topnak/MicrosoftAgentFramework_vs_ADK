@@ -38,7 +38,7 @@ with col1:
         <ul>
         <li><strong>Portal:</strong> <a href="https://ai.azure.com" target="_blank">ai.azure.com</a></li>
         <li><strong>Cloud:</strong> Microsoft Azure</li>
-        <li><strong>Agent API:</strong> Responses API v2 (Agents v2)</li>
+        <li><strong>Agent API:</strong> OpenAI Responses protocol (Agents v2)</li>
         <li><strong>Resource Model:</strong> Foundry resource → Projects</li>
         <li><strong>SDKs:</strong> Python, C#, TypeScript (preview), Java (preview)</li>
         <li><strong>Agent Framework:</strong> Microsoft Agent Framework (MAF)</li>
@@ -110,7 +110,7 @@ comparison = {
         "Claude, Gemini, Mistral, Llama, Cohere — via Foundry Models",
         "MAF SDK + Foundry Agents (server-side)",
         "Azure Functions, Container Apps, AKS, Foundry Agent Service",
-        "Responses API v2 (conversations, items, responses)",
+        "OpenAI Responses protocol (conversations, items, responses)",
         "Graph-based workflows with checkpointing",
         "1,400+ tools via tool catalog + MCP + A2A",
         "Thread-based + Cosmos DB + Redis + Mem0",
@@ -261,7 +261,7 @@ with col_e1:
         <li><strong>Azure AI Studio</strong> — Original portal for Azure AI services</li>
         <li><strong>Azure AI Foundry</strong> — Consolidated hub + Azure OpenAI + AI Services</li>
         <li><strong>Microsoft Foundry</strong> — Current: unified PaaS, single resource model,
-            Responses API v2, 1400+ tool catalog</li>
+            OpenAI Responses protocol, 1400+ tool catalog</li>
         </ol>
         <p><strong>Key shift:</strong> From multiple Azure AI packages and endpoints
         to a single <code>azure-ai-projects 2.x</code> client against one project endpoint.</p>
@@ -308,7 +308,7 @@ with col_w1:
         <li>You want <strong>GPT-4o / o3 / o4-mini</strong> as primary models</li>
         <li>You need <strong>Fabric / FabricIQ / WorkIQ</strong> integration</li>
         <li>You require <strong>Azure Policy</strong> governance and <strong>VNet</strong> isolation</li>
-        <li>You want the <strong>Responses API v2</strong> with server-side conversation management</li>
+        <li>You want the <strong>OpenAI Responses protocol</strong> with server-side conversation management</li>
         <li>Your team uses <strong>.NET / C#</strong> primarily</li>
         <li>You need <strong>1,400+ enterprise tools</strong> from the tool catalog</li>
         </ul>

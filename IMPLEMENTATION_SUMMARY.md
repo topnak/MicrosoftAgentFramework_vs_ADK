@@ -19,7 +19,7 @@ A comprehensive **Streamlit multi-page application** comparing Microsoft Agent F
 
 | Chapter | Page | Focus |
 |---------|------|-------|
-| 1. Agent Creation | `pages/1_Agent_Creation.py` | Agent definition, `agent.yaml` metadata, Responses API v2 streaming, live demo |
+| 1. Agent Creation | `pages/1_Agent_Creation.py` | Agent definition, `agent.yaml` metadata, OpenAI Responses streaming, live demo |
 | 2. Tool Integration | `pages/2_Tool_Integration.py` | Function tools, enterprise built-in tools (AI Search, Bing, Code Interpreter), RAG, MCP |
 | 3. Memory & State | `pages/3_Memory_State.py` | Thread persistence (Cosmos DB), long-term memory, user profiles, architecture diagrams |
 | 4. Multi-Agent | `pages/4_Multi_Agent.py` | Graph-based orchestration, fan-out/fan-in, human-in-the-loop, architecture diagrams |
@@ -39,7 +39,7 @@ A comprehensive **Streamlit multi-page application** comparing Microsoft Agent F
 
 | File | Purpose |
 |------|---------|
-| `live_demo/maf_chat.py` | Streaming chat interface using Foundry v2 Responses API |
+| `live_demo/maf_chat.py` | Streaming chat interface using OpenAI Responses protocol |
 | `live_demo/config.py` | `.env` loader for Azure AI Foundry connection |
 
 **Mock mode**: When `.env` is not configured, shows a simulated supply-chain conversation demonstrating tool calls (Snowflake queries, BlueYonder fulfillment actions).
@@ -50,7 +50,7 @@ A comprehensive **Streamlit multi-page application** comparing Microsoft Agent F
 
 | File | Count | Content |
 |------|-------|---------|
-| `content/snippets_maf.py` | 16 snippets | MAF v2 Responses API patterns across all 6 chapters |
+| `content/snippets_maf.py` | 16 snippets | MAF OpenAI Responses patterns across all 6 chapters |
 | `content/snippets_adk.py` | 16 snippets | Google ADK equivalent patterns for comparison |
 
 ### Responsive Design
@@ -99,7 +99,7 @@ A comprehensive **Streamlit multi-page application** comparing Microsoft Agent F
 |-------|-----------|
 | UI Framework | Streamlit 1.38+ |
 | Language | Python 3.11+ |
-| MAF Baseline | Microsoft Agent Framework v2 Responses API |
+| MAF Baseline | Microsoft Agent Framework with OpenAI Responses protocol |
 | ADK Baseline | Google ADK (google-adk >= 1.0) |
 | Auth | Azure Identity (DefaultAzureCredential) |
 | Foundry Client | azure-ai-projects |

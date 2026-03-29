@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tool Integration — MAF vs ADK</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<nav class="sidebar">
+    <h3>🗂️ MAF vs ADK</h3>
+    <ul><li><a href="index.html">🤖 Home</a></li>
+<li><a href="0-what-is.html">📚 What Is MAF vs ADK</a></li>
+<li><a href="1-agent-creation.html">🏗️ Agent Creation</a></li>
+<li><a href="2-tool-integration.html" class="active">🔧 Tool Integration</a></li>
+<li><a href="3-memory-state.html">🧠 Memory & State</a></li>
+<li><a href="4-multi-agent.html">🔀 Multi-Agent</a></li>
+<li><a href="5-deployment.html">🚀 Deployment</a></li>
+<li><a href="6-third-party.html">🔗 3rd Party</a></li>
+<li><a href="7-cross-model.html">🔄 Cross-Model</a></li>
+<li><a href="8-foundry-vs-vertex.html">☁️ Foundry vs Vertex</a></li>
+</ul>
+    <div class="sidebar-meta">
+        <p><strong>Baseline:</strong> MAF v2 Responses API</p>
+        <p><strong>Compared with:</strong> Google ADK</p>
+        <p style="margin-top:1rem;">March 2026</p>
+    </div>
+</nav>
+<div class="mobile-nav">
+    <select onchange="location.href=this.value">
+        <option value="index.html">🤖 Home</option>
+<option value="0-what-is.html">📚 What Is MAF vs ADK</option>
+<option value="1-agent-creation.html">🏗️ Agent Creation</option>
+<option value="2-tool-integration.html" selected>🔧 Tool Integration</option>
+<option value="3-memory-state.html">🧠 Memory & State</option>
+<option value="4-multi-agent.html">🔀 Multi-Agent</option>
+<option value="5-deployment.html">🚀 Deployment</option>
+<option value="6-third-party.html">🔗 3rd Party</option>
+<option value="7-cross-model.html">🔄 Cross-Model</option>
+<option value="8-foundry-vs-vertex.html">☁️ Foundry vs Vertex</option>
+
+    </select>
+</div>
+<main class="main-content">
+
+<h1 class="section-header">🔧 Chapter 2: Tool Integration</h1>
+<p>Tools extend what an agent can <strong>do</strong> — from querying databases to searching the web.</p>
+<hr>
+
+<h3>2.1 — Custom Function Tools</h3><hr>
+<div class="columns">
+<div>
+    <span class="framework-label-maf">Microsoft Agent Framework</span>
+    <p><strong>FunctionTool with Type Safety</strong></p>
+    <p>Wrap any Python function as a <code>FunctionTool</code>. Schema is auto-generated from type hints and docstrings.</p>
+    <pre><code class="language-python">def query_snowflake(query: str, warehouse: str = &quot;COMPUTE_WH&quot;) -&gt; str:
+    &quot;&quot;&quot;Execute a read-only query against Snowflake data warehouse.&quot;&quot;&quot;
+    return f&quot;Results for: {query}&quot;
+
+def check_order_status(order_id: str) -&gt; str:
+    &quot;&quot;&quot;Check BlueYonder order fulfillment status.&quot;&quot;&quot;
+    return f&quot;Order {order_id}: In Transit, ETA 2 days&quot;
+
+# Agent Framework auto-wraps functions as tools
+agent = AzureOpenAIResponsesClient(
+    credential=AzureCliCredential(),
+).as_agent(
+    name=&quot;multi-tool-agent&quot;,
+    instructions=&quot;Use tools to answer supply chain questions.&quot;,
+    tools=[query_snowflake, check_order_status],
+)</code></pre>
+</div>
+<div>
+    <span class="framework-label-adk">Google ADK</span>
+    <p><strong>Functions as Tools</strong></p>
+    <p>ADK also supports function-based tools with automatic schema generation. Return type must be <code>dict</code>.</p>
+    <pre><code class="language-python">from google.adk.agents import Agent
+
+def query_snowflake(query: str, warehouse: str = &quot;COMPUTE_WH&quot;) -&gt; dict:
+    &quot;&quot;&quot;Execute a query against Snowflake data warehouse.&quot;&quot;&quot;
+    # Manual Snowflake connector setup required
+    return {&quot;results&quot;: f&quot;Results for: {query}&quot;}
+
+def check_order_status(order_id: str) -&gt; dict:
+    &quot;&quot;&quot;Check order fulfillment status.&quot;&quot;&quot;
+    return {&quot;status&quot;: &quot;In Transit&quot;, &quot;eta&quot;: &quot;2 days&quot;}
+
+# ADK auto-wraps plain functions as FunctionTool
+agent = Agent(
+    name=&quot;multi_tool_agent&quot;,
+    model=&quot;gemini-2.5-flash&quot;,
+    instruction=&quot;Use tools to answer supply chain questions.&quot;,
+    tools=[query_snowflake, check_order_status],
+)
+# Docstrings and type hints are used for tool schemas</code></pre>
+</div>
+</div>
+
+<h3>2.2 — Built-in Enterprise Tools</h3><hr>
+<div class="columns">
+<div>
+    <span class="framework-label-maf">Microsoft Agent Framework</span>
+    <p><strong>Azure AI Search, Bing, Code Interpreter, Web Search</strong></p>
+    <p>MAF provides 4+ built-in tools: WebSearchPreview, CodeInterpreter, Azure AI Search, Bing Grounding.</p>
+    <pre><code class="language-python"># Built-in tools provided by Agent Framework
+# Available via the OpenAI Responses tool types:
+
+agent = AzureOpenAIResponsesClient(
+    credential=AzureCliCredential(),
+).as_agent(
+    name=&quot;analyst-agent&quot;,
+    instructions=&quot;Use web search and code interpreter to analyze data.&quot;,
+    tools=[
+        {&quot;type&quot;: &quot;web_search_preview&quot;},       # Free web search
+        {&quot;type&quot;: &quot;code_interpreter&quot;},          # Sandbox Python
+        search_tool,                            # Azure AI Search
+    ],
+)
+
+# Also available:
+# - Bing Grounding (enterprise web search with citations)
+# - File Search (vector-store-backed document search)</code></pre>
+</div>
+<div>
+    <span class="framework-label-adk">Google ADK</span>
+    <p><strong>Google Search + Code Execution</strong></p>
+    <p>ADK provides Google Search Grounding, BuiltInCodeExecutor, and OpenAPI tools. No Azure AI Search or Bing equivalent.</p>
+    <pre><code class="language-python">from google.adk.agents import Agent
+from google.adk.code_executors import BuiltInCodeExecutor
+
+# ADK: Built-in code execution via Gemini API
+code_agent = Agent(
+    name=&quot;calculator_agent&quot;,
+    model=&quot;gemini-2.5-flash&quot;,
+    code_executor=BuiltInCodeExecutor(),
+    instruction=&quot;&quot;&quot;You are a calculator agent.
+    Write and execute Python code to calculate results.&quot;&quot;&quot;,
+    description=&quot;Executes Python code for calculations.&quot;,
+)
+
+# The BuiltInCodeExecutor uses Gemini&#x27;s native
+# code execution capability — runs in Google&#x27;s sandbox
+
+# Also supports OpenAPI tools for REST API integration:
+# from google.adk.tools.openapi_tool import OpenAPIToolset
+# tools = OpenAPIToolset.from_url(&quot;https://api.example.com/openapi.json&quot;)</code></pre>
+</div>
+</div>
+
+<h3>2.3 — RAG / Vector Search</h3><hr>
+<div class="columns">
+<div>
+    <span class="framework-label-maf">Microsoft Agent Framework</span>
+    <p><strong>Azure AI Search — Built-in RAG</strong></p>
+    <p>One-line RAG integration with <code>AzureAISearchToolDefinition</code>. Supports vector, semantic, hybrid search.</p>
+    <pre><code class="language-python">from agent_framework.azure_ai_search import AzureAISearchTool
+
+# Built-in Azure AI Search — RAG with vector/semantic/hybrid
+search_tool = AzureAISearchTool(
+    index_name=&quot;product-catalog&quot;,
+    search_endpoint=os.environ[&quot;AZURE_SEARCH_ENDPOINT&quot;],
+    credential=AzureCliCredential(),
+)
+
+agent = AzureOpenAIResponsesClient(
+    credential=AzureCliCredential(),
+).as_agent(
+    name=&quot;rag-agent&quot;,
+    instructions=&quot;Search the product catalog to answer questions.&quot;,
+    tools=[search_tool],
+)</code></pre>
+</div>
+<div>
+    <span class="framework-label-adk">Google ADK</span>
+    <p><strong>Google Search + Vertex AI Search Grounding</strong></p>
+    <p>ADK provides Google Search Grounding built-in. Vertex AI Search for enterprise RAG requires separate setup.</p>
+    <pre><code class="language-python">from google.adk.agents import Agent
+from google.adk.tools import google_search
+
+# Built-in: Google Search Grounding
+agent = Agent(
+    name=&quot;search_agent&quot;,
+    model=&quot;gemini-2.5-flash&quot;,
+    instruction=&quot;Search the web for information.&quot;,
+    tools=[google_search],
+)
+
+# Also available: Vertex AI Search Grounding
+# for enterprise search over custom data sources.
+# Configured via Vertex AI, not a standalone tool.
+
+# ⚠️ No built-in Azure AI Search equivalent
+# ⚠️ No built-in Bing Grounding
+# ⚠️ No built-in File Search with vector store
+# → Use OpenAPI tools or custom functions for RAG</code></pre>
+</div>
+</div>
+
+<h3>2.4 — MCP (Model Context Protocol) Tools</h3><hr>
+<div class="columns">
+<div>
+    <span class="framework-label-maf">Microsoft Agent Framework</span>
+    <p><strong>Native MCP with Allowed-Tools Control</strong></p>
+    <p>Connect to any MCP server with <code>McpToolDefinition</code>. Specify <code>allowed_tools</code> for access control.</p>
+    <pre><code class="language-python">from agent_framework.core.tools import McpTool
+
+# Connect to ANY external service via MCP
+snowflake_mcp = McpTool(
+    server_url=&quot;https://snowflake-mcp-server.azurewebsites.net/sse&quot;,
+    allowed_tools=[&quot;execute_query&quot;, &quot;list_tables&quot;, &quot;describe_table&quot;],
+)
+
+agent = AzureOpenAIResponsesClient(
+    credential=AzureCliCredential(),
+).as_agent(
+    name=&quot;mcp-agent&quot;,
+    instructions=&quot;Use the Snowflake MCP server to query data.&quot;,
+    tools=[snowflake_mcp],
+)</code></pre>
+</div>
+<div>
+    <span class="framework-label-adk">Google ADK</span>
+    <p><strong>MCPToolset (Cleanup Required)</strong></p>
+    <p>ADK supports MCP via <code>MCPToolset.from_server()</code>. Requires manual lifecycle management.</p>
+    <pre><code class="language-python"># ADK: MCP tool support
+from google.adk.tools.mcp_tool import MCPToolset, SseServerParams
+
+# Connect to MCP server
+tools, cleanup = await MCPToolset.from_server(
+    connection_params=SseServerParams(
+        url=&quot;https://snowflake-mcp-server.example.com/sse&quot;,
+    ),
+)
+
+agent = Agent(
+    name=&quot;mcp_agent&quot;,
+    model=&quot;gemini-2.5-flash&quot;,
+    instruction=&quot;Query Snowflake via MCP.&quot;,
+    tools=tools,
+)
+
+# Note: Must manage cleanup lifecycle manually
+# await cleanup()</code></pre>
+</div>
+</div>
+
+<div class="advantage-banner">
+    <h4>✅ MAF Advantage — Tool Integration</h4>
+    <ul><li><strong>Azure AI Search RAG</strong> — One-line vector/semantic/hybrid search</li><li><strong>Bing Grounding</strong> — Enterprise web search with citations</li><li><strong>Multi-tool ToolSet</strong> — Compose built-in + custom + MCP tools freely</li><li><strong>MCP with allowed_tools</strong> — Fine-grained remote tool access control</li></ul>
+</div>
+
+<div class="footer">
+    Built for Show &amp; Tell — Microsoft Agent Framework v2 Responses API — March 2026
+</div>
+</main>
+</body>
+</html>

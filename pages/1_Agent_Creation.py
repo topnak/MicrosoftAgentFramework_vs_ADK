@@ -177,7 +177,7 @@ st.markdown("")
 # ── Section 3: Agent Invocation ─────────────────────────────────────
 render_comparison(
     section_title="1.3 — Agent Invocation & Streaming",
-    maf_title="OpenAI Responses API v2 (Streaming)",
+    maf_title="OpenAI Responses (Streaming)",
     maf_description=(
         "Invoke agents via the **OpenAI Responses API** — the industry-standard protocol. "
         "Built-in SSE streaming with typed events for text deltas, tool calls, and citations."
@@ -191,8 +191,8 @@ render_comparison(
     adk_code=adk.AGENT_INVOKE,
 )
 
-# ── Feature deep-dive: Responses API v2 ─────────────────────────────
-with st.expander("🔍 Deep Dive: Responses API v2 — The Industry Standard", expanded=False):
+# ── Feature deep-dive: OpenAI Responses ─────────────────────────────
+with st.expander("🔍 Deep Dive: OpenAI Responses — The Industry Standard", expanded=False):
     st.markdown(
         """
         #### Why the Invocation Protocol Matters
@@ -203,7 +203,7 @@ with st.expander("🔍 Deep Dive: Responses API v2 — The Industry Standard", e
         - Whether third-party observability tools can intercept and analyze calls
         - How easy it is for developers to adopt
 
-        #### MAF: OpenAI Responses API v2
+        #### MAF: OpenAI Responses Protocol
 
         | Feature | Detail |
         |---------|--------|
@@ -278,7 +278,7 @@ features = {
         "✅ Server-side with unique ID",
         "✅ Version-controlled YAML",
         "✅ Python & .NET first-class",
-        "✅ Responses API v2",
+        "✅ OpenAI Responses",
         "✅ text.delta, tool_call, citations",
         "✅ Foundry intelligent routing",
         "✅ DefaultAzureCredential",
@@ -287,14 +287,14 @@ features = {
         "~30 min (with Foundry setup)",
     ],
     "ADK": [
-        "⚠️ In-process Python object",
-        "⚠️ Agent Config (basic)",
+        "✅ In-process Agent objects",
+        "✅ Agent Config (JSON/YAML)",
         "✅ Python, TypeScript, Go, Java",
-        "⚠️ Proprietary runner",
-        "⚠️ Custom event iteration",
+        "✅ Gemini API",
+        "✅ Gemini Live API streaming",
         "❌ Manual",
-        "⚠️ GCP IAM (manual)",
-        "⚠️ Git + Agent Config",
+        "✅ GCP IAM + Workload Identity",
+        "✅ Git + Agent Config",
         "✅ adk api_server CLI",
         "~5 min (API key + code)",
     ],
@@ -319,7 +319,7 @@ st.dataframe(df, use_container_width=True, hide_index=True, height=420)
 render_advantage(
     "Agent Creation",
     [
-        "<strong>OpenAI Responses API v2</strong> — Industry-standard protocol; ADK uses proprietary runner",
+        "<strong>OpenAI Responses protocol</strong> — Industry-standard protocol; ADK uses Gemini API",
         "<strong>agent.yaml</strong> — Mature declarative config with versioning, secrets, CI/CD; ADK Agent Config is newer",
         "<strong>Managed resource</strong> — Agents are Foundry resources with IDs, versioning, and lifecycle management",
         "<strong>Azure-native security</strong> — Managed Identity, RBAC, Key Vault; ADK uses GCP IAM",
@@ -332,7 +332,7 @@ st.markdown("---")
 # ── Live Demo ───────────────────────────────────────────────────────
 st.markdown("## 🎯 Try It — Live MAF Agent Demo")
 st.markdown(
-    "See the **Responses API v2 streaming** in action. "
+    "See the **OpenAI Responses streaming** in action. "
     "This demo connects to a MAF agent in Azure AI Foundry."
 )
 

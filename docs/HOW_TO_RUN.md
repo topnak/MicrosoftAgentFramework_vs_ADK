@@ -96,7 +96,7 @@ Use the sidebar to navigate through all 6 chapters:
 
 | Page | Content |
 |------|---------|
-| 🏗️ Agent Creation | Side-by-side code for agent definition, `agent.yaml`, Responses API v2 |
+| 🏗️ Agent Creation | Side-by-side code for agent definition, `agent.yaml`, OpenAI Responses |
 | 🔧 Tool Integration | Function tools, built-in tools (AI Search, Bing, Code Interpreter), MCP |
 | 🧠 Memory & State | Thread persistence, long-term memory, user profile memory |
 | 🔀 Multi-Agent | Graph orchestration, fan-out/fan-in, human-in-the-loop |

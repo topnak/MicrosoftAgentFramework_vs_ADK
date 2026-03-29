@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memory &amp; State — MAF vs ADK</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<nav class="sidebar">
+    <h3>🗂️ MAF vs ADK</h3>
+    <ul><li><a href="index.html">🤖 Home</a></li>
+<li><a href="0-what-is.html">📚 What Is MAF vs ADK</a></li>
+<li><a href="1-agent-creation.html">🏗️ Agent Creation</a></li>
+<li><a href="2-tool-integration.html">🔧 Tool Integration</a></li>
+<li><a href="3-memory-state.html" class="active">🧠 Memory & State</a></li>
+<li><a href="4-multi-agent.html">🔀 Multi-Agent</a></li>
+<li><a href="5-deployment.html">🚀 Deployment</a></li>
+<li><a href="6-third-party.html">🔗 3rd Party</a></li>
+<li><a href="7-cross-model.html">🔄 Cross-Model</a></li>
+<li><a href="8-foundry-vs-vertex.html">☁️ Foundry vs Vertex</a></li>
+</ul>
+    <div class="sidebar-meta">
+        <p><strong>Baseline:</strong> MAF v2 Responses API</p>
+        <p><strong>Compared with:</strong> Google ADK</p>
+        <p style="margin-top:1rem;">March 2026</p>
+    </div>
+</nav>
+<div class="mobile-nav">
+    <select onchange="location.href=this.value">
+        <option value="index.html">🤖 Home</option>
+<option value="0-what-is.html">📚 What Is MAF vs ADK</option>
+<option value="1-agent-creation.html">🏗️ Agent Creation</option>
+<option value="2-tool-integration.html">🔧 Tool Integration</option>
+<option value="3-memory-state.html" selected>🧠 Memory & State</option>
+<option value="4-multi-agent.html">🔀 Multi-Agent</option>
+<option value="5-deployment.html">🚀 Deployment</option>
+<option value="6-third-party.html">🔗 3rd Party</option>
+<option value="7-cross-model.html">🔄 Cross-Model</option>
+<option value="8-foundry-vs-vertex.html">☁️ Foundry vs Vertex</option>
+
+    </select>
+</div>
+<main class="main-content">
+
+<h1 class="section-header">🧠 Chapter 3: Memory & State</h1>
+<p>How agents <strong>remember</strong> conversations and maintain state across interactions is critical for enterprise applications.</p>
+<hr>
+
+<h3>3.1 — Conversation Persistence</h3><hr>
+<div class="columns">
+<div>
+    <span class="framework-label-maf">Microsoft Agent Framework</span>
+    <p><strong>Thread-based Persistence (Cosmos DB-backed)</strong></p>
+    <p>Conversations persist automatically via threads. Backed by Azure Cosmos DB with full message history.</p>
+    <pre><code class="language-python"># Conversation persistence via session stores
+from agent_framework.azure_cosmos import CosmosSessionStore
+
+# Create a Cosmos DB-backed session store
+store = CosmosSessionStore(
+    endpoint=os.environ[&quot;COSMOS_ENDPOINT&quot;],
+    credential=DefaultAzureCredential(),
+    database_name=&quot;agent_memory&quot;,
+    container_name=&quot;sessions&quot;,
+)
+
+agent = AzureOpenAIResponsesClient(
+    credential=AzureCliCredential(),
+).as_agent(
+    name=&quot;supply-chain-assistant&quot;,
+    instructions=&quot;Help with supply chain queries.&quot;,
+    session_store=store,  # Auto-persists conversations
+)
+
+# First turn — history auto-saved
+result = await agent.run(&quot;What were my last 3 orders?&quot;)
+
+# Continue conversation — full history preserved
+result = await agent.run(&quot;Cancel the most recent one&quot;)</code></pre>
+</div>
+<div>
+    <span class="framework-label-adk">Google ADK</span>
+    <p><strong>Session Service</strong></p>
+    <p>ADK uses SessionService for conversations. InMemorySessionService (lost on restart) or DatabaseSessionService for persistence.</p>
+    <pre><code class="language-python">from google.adk.sessions import InMemorySessionService
+
+# In-memory sessions — lost on restart
+session_service = InMemorySessionService()
+
+# For persistence, use database-backed sessions
+from google.adk.sessions import DatabaseSessionService
+
+session_service = DatabaseSessionService(
+    db_url=&quot;sqlite:///sessions.db&quot;,
+    # or PostgreSQL for production
+)
+
+# ADK also supports session rewind (time-travel)
+# and session migration between services
+
+runner = Runner(
+    agent=agent,
+    app_name=&quot;supply_chain_app&quot;,
+    session_service=session_service,
+)</code></pre>
+</div>
+</div>
+
+<h3>3.2 — Long-term Memory & State</h3><hr>
+<div class="columns">
+<div>
+    <span class="framework-label-maf">Microsoft Agent Framework</span>
+    <p><strong>Built-in Long-term Memory</strong></p>
+    <p>MAF provides auto-summarized long-term memory across threads, backed by Cosmos DB, Redis, or Mem0.</p>
+    <pre><code class="language-python"># MAF supports multiple memory/state backends:
+# - Azure Cosmos DB for persistent threads/state
+# - Redis for fast session state
+# - Mem0 for long-term memory with embeddings
+
+# Using agent-framework with Cosmos DB persistence
+from agent_framework.azure_cosmos import CosmosSessionStore
+
+store = CosmosSessionStore(
+    endpoint=os.environ[&quot;COSMOS_ENDPOINT&quot;],
+    credential=DefaultAzureCredential(),
+    database_name=&quot;agent_memory&quot;,
+    container_name=&quot;sessions&quot;,
+)
+
+# Or Redis for fast key-value state
+from agent_framework.redis import RedisSessionStore
+
+redis_store = RedisSessionStore(
+    redis_url=&quot;redis://localhost:6379&quot;,
+)
+
+# Mem0 integration for semantic long-term memory
+from agent_framework.mem0 import Mem0MemoryStore
+
+mem0_store = Mem0MemoryStore(
+    api_key=os.environ[&quot;MEM0_API_KEY&quot;],
+)
+
+# Memory persists across sessions automatically
+# Thread history maintained in Cosmos DB
+# User context accumulates over time via Mem0</code></pre>
+</div>
+<div>
+    <span class="framework-label-adk">Google ADK</span>
+    <p><strong>State Dictionary + Memory Service</strong></p>
+    <p>ADK uses typed state dictionaries (app, user, session scope) plus a Memory Service for cross-session recall.</p>
+    <pre><code class="language-python"># ADK: State and Memory services
+# State = per-session key-value store
+# Memory = cross-session recall
+
+# State is accessed via session
+session = await session_service.get_session(
+    app_name=&quot;supply_chain_app&quot;,
+    user_id=&quot;user-1&quot;,
+    session_id=&quot;session-1&quot;,
+)
+state = session.state  # Dict-like state object
+
+# output_key saves agent response to state automatically
+agent = Agent(
+    name=&quot;analyst&quot;,
+    model=&quot;gemini-2.5-flash&quot;,
+    output_key=&quot;analysis_result&quot;,  # Auto-saved to state
+    instruction=&quot;Analyze the data.&quot;,
+)
+
+# Memory service for cross-session recall
+from google.adk.sessions import InMemoryMemoryService
+
+memory_service = InMemoryMemoryService()
+
+# Context features:
+# ✅ Context caching (reduce token usage)
+# ✅ Context compression (auto-summarize long contexts)
+# ✅ Session rewind (go back to earlier state)
+# ⚠️ No managed persistence like Cosmos DB
+# ⚠️ No per-user long-term profile learning</code></pre>
+</div>
+</div>
+
+<h3>Memory Architecture Comparison</h3><hr>
+<div class="columns">
+<div>
+    <div class="maf-col"><h4 style="color:#4A90D9;">MAF Memory Architecture</h4></div>
+    <pre><code class="language-text">┌─────────────────────────────┐
+│   Agent Session             │
+│   ┌─────────────────────┐   │
+│   │ Thread (Messages)   │   │
+│   │ • User messages     │   │
+│   │ • Agent responses   │   │
+│   │ • Tool calls        │   │
+│   └─────────────────────┘   │
+│   ┌─────────────────────┐   │
+│   │ Long-term Memory    │   │
+│   │ • Auto-summarized   │   │
+│   │ • Cross-thread      │   │
+│   │ • User profiles     │   │
+│   └─────────────────────┘   │
+│   ┌─────────────────────┐   │
+│   │ Backend Store       │   │
+│   │ • Azure Cosmos DB   │   │
+│   │ • Redis             │   │
+│   │ • Mem0              │   │
+│   └─────────────────────┘   │
+└─────────────────────────────┘</code></pre>
+</div>
+<div>
+    <div class="adk-col"><h4 style="color:#34A853;">ADK Memory Architecture</h4></div>
+    <pre><code class="language-text">┌─────────────────────────────┐
+│   Runner Execution          │
+│   ┌─────────────────────┐   │
+│   │ Session             │   │
+│   │ • Events history    │   │
+│   │ • Turn tracking     │   │
+│   └─────────────────────┘   │
+│   ┌─────────────────────┐   │
+│   │ State               │   │
+│   │ • App-scope dict    │   │
+│   │ • User-scope dict   │   │
+│   │ • Session-scope     │   │
+│   └─────────────────────┘   │
+│   ┌─────────────────────┐   │
+│   │ Memory Service      │   │
+│   │ • Cross-session     │   │
+│   │ • InMemory / DB     │   │
+│   └─────────────────────┘   │
+│   ┌─────────────────────┐   │
+│   │ Artifacts           │   │
+│   │ • Binary files      │   │
+│   │ • Generated content │   │
+│   └─────────────────────┘   │
+└─────────────────────────────┘</code></pre>
+</div>
+</div>
+
+<div class="advantage-banner">
+    <h4>✅ MAF Advantage — Memory & State</h4>
+    <ul><li><strong>Azure Cosmos DB</strong> — Managed, globally-distributed persistence out of the box</li><li><strong>Auto-summarized memory</strong> — Long-term memory with automatic summarization</li><li><strong>Thread model</strong> — Server-side conversation management, not in-process</li><li><strong>Mem0 integration</strong> — Advanced memory retrieval with semantic search</li></ul>
+</div>
+
+<div class="footer">
+    Built for Show &amp; Tell — Microsoft Agent Framework v2 Responses API — March 2026
+</div>
+</main>
+</body>
+</html>

@@ -37,7 +37,7 @@ render_comparison(
         "Full control over task flow with type-safe transitions."
     ),
     maf_code=maf.MULTI_AGENT_GRAPH,
-    adk_title="Fixed Patterns (Sequential / Parallel)",
+    adk_title="Built-in Patterns + ADK 2.0 Graph Workflows",
     adk_description=(
         "ADK provides **pre-built orchestration classes**: "
         "`SequentialAgent`, `ParallelAgent`, `LoopAgent`. "
@@ -64,7 +64,7 @@ render_comparison(
         "- **Workflow agents** — SequentialAgent, ParallelAgent, LoopAgent\n"
         "- **LLM-driven transfer** — Dynamic routing via sub_agents\n"
         "- **Custom agents** — Extend BaseAgent for custom logic\n"
-        "- **ADK 2.0 Alpha** — Graph-based workflows with routes, data handling, human input\n"
+        "- **ADK 2.0** — Graph-based workflows with routes, data handling, human input\n"
         "- **A2A protocol** — Cross-framework agent communication"
     ),
     adk_code=adk.MULTI_AGENT_PATTERNS,

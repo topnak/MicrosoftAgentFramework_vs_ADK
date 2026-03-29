@@ -23,7 +23,7 @@ streamlit run app.py
   6. 🔗 3rd Party Integration — Snowflake, BlueYonder, Fabric
 
 - **Feature Comparison Matrix** — Quick visual overview of capabilities
-- **Live Demo** — MAF conversational agent with Responses API v2 streaming
+- **Live Demo** — MAF conversational agent with OpenAI Responses streaming
 - **Architecture Diagrams** — Side-by-side architecture comparisons
 
 ## Live Demo Setup
@@ -59,7 +59,7 @@ ADK_MAF/
 │   ├── code_block.py            # Code display helper
 │   └── page_setup.py            # CSS injection
 ├── live_demo/
-│   ├── maf_chat.py              # Live MAF chat (Responses API v2)
+│   ├── maf_chat.py              # Live MAF chat (OpenAI Responses)
 │   └── config.py                # .env loader
 ├── content/
 │   ├── snippets_maf.py          # MAF code snippets
@@ -73,6 +73,6 @@ ADK_MAF/
 
 ## Baseline
 
-- **MAF**: Microsoft Agent Framework with Foundry v2 Responses API
+- **MAF**: Microsoft Agent Framework with OpenAI Responses protocol
 - **ADK**: Google Agent Development Kit (google-adk)
 - **Focus**: Enterprise conversational AI with 3rd-party integrations
